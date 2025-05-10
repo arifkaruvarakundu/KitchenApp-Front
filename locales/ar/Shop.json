@@ -1,0 +1,18 @@
+{
+    "allProducts": "جميع المنتجات",
+    "viewAll": "عرض الكل",
+    "campaign": "حملة",
+    "kd": "د.ك",
+    "successaddcart": "تمت إضافة العنصر إلى السلة بنجاح",
+    "campaignPrice": "سعر الحملة",
+    "expired": "انتهت",
+    "left": "متبقي",
+    "loading": "جاري التحميل...",
+    "errorLoading": "فشل في تحميل المنتجات",
+    "add": "إضافة",
+    "quantity": "الكمية",
+    "increase": "زيادة",
+    "decrease": "نقص",
+    "join": "انضم",
+    "joined": "انضم"
+  }

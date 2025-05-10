@@ -1,0 +1,30 @@
+{
+    "title": "تسجيل الدخول",
+    "emailPlaceholder": "البريد الإلكتروني",
+    "passwordPlaceholder": "كلمة المرور",
+    "button": "تسجيل الدخول",
+    "footerText": "ليس لديك حساب؟",
+    "signupLink": "إنشاء حساب",
+    "fillFields": "يرجى ملء كلا الحقلين.",
+    "invalidEmail": "يرجى إدخال بريد إلكتروني صالح.",
+    "success": "تم تسجيل الدخول بنجاح",
+    "failed": "فشل تسجيل الدخول",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "networkError": "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا.",
+   
+    "titleUp": "إنشاء حساب",
+    "firstNamePlaceholder": "الاسم الأول",
+    "lastNamePlaceholder": "اسم العائلة",
+    "emailPlaceholderUp": "البريد الإلكتروني",
+    "passwordPlaceholderUp": "كلمة المرور",
+    "confirmPasswordPlaceholder": "تأكيد كلمة المرور",
+    "buttonUp": "إنشاء حساب",
+    "footerTextUp": "لديك حساب بالفعل؟",
+    "signinLink": "تسجيل الدخول",
+    "fillFieldsUp": "يرجى ملء جميع الحقول.",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+    "successUp": "تم إنشاء الحساب بنجاح!",
+    "error": "حدث خطأ ما.",
+    "networkErrorUp": "خطأ في الشبكة. يرجى المحاولة لاحقًا."
+   
+  }

@@ -1,0 +1,32 @@
+{
+
+    "title": "Sign In",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "button": "Sign In",
+    "footerText": "Don't have an account?",
+    "signupLink": "Sign Up",
+    "fillFields": "Please fill in both fields.",
+    "invalidEmail": "Please enter a valid email address.",
+    "success": "Login Successful",
+    "failed": "Login Failed",
+    "invalidCredentials": "Invalid email or password.",
+    "networkError": "There was an error while logging in. Please try again later.",
+    
+    "titleUp": "Create an Account",
+    "firstNamePlaceholder": "First Name",
+    "lastNamePlaceholder": "Last Name",
+    "emailPlaceholderUp": "Email",
+    "passwordPlaceholderUp": "Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "buttonUp": "Sign Up",
+    "footerTextUp": "Already have an account?",
+    "signinLink": "Sign In",
+    "fillFieldsUp": "Please fill in all fields.",
+    "passwordMismatch": "Passwords do not match.",
+    "successUp": "Sign up successful!",
+    "error": "Something went wrong.",
+    "networkErrorUp": "Network error. Please try again."
+  
+  }
+
