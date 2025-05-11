@@ -182,11 +182,11 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#a8d5ba",
+    backgroundColor: "#58b3e4",
   },
   header: {
     height: 60,
-    backgroundColor: "#a8d5ba",
+    backgroundColor: "#58b3e4",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

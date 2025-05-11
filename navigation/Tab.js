@@ -45,8 +45,8 @@ export default function TabNavigator() {
           //   elevation: 5,
           // },
           tabBarStyle: {
-            backgroundColor: '#a8d5ba',
-            height: 70 + bottom, // slightly increased height
+            backgroundColor: '#58b3e4',
+            height: 60 + bottom, // slightly increased height
             paddingBottom: Platform.OS === 'android' ? bottom : bottom + 5,
             paddingTop: 5,
             shadowColor: '#000',

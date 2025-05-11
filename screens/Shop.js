@@ -21,7 +21,7 @@ const Shop = ({navigation}) => {
 
     const { i18n } = useTranslation();
 
-    const categoriesFlatListRef = useRef(null); // <--- NEW
+    const categoriesFlatListRef = useRef(null); 
 
     useEffect(() => {
       if (categoryId || categoryName || categoryNameAR) {

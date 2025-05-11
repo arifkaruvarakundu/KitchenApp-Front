@@ -1,0 +1,24 @@
+{
+    "loading": "Loading product details...",
+    "brand": "Brand",
+    "campaignPrice" : "Campaign Price",
+    "price": "Price",
+    "kd": "KD",
+    "add_to_cart": "Add to Cart",
+    "start_free": "Start Free",
+    "join_free": "Join Free",
+    "group_campaign_active": "Group Campaign Active",
+    "participants": "participants",
+    "more_to_unlock": "more to unlock campaign price",
+    "current": "Current",
+    "target": "Target",
+    "early_bird": "Early Bird - 5% Extra Off",
+    "vip_deal": "VIP Deal - 25% Extra Off",
+    "description": "Description",
+    "error_invalid_product": "Error: Invalid product selection.",
+    "success_item_added": "Success: Item added to cart!",
+    "error_add_failed": "Error: Failed to add item to cart.",
+    "features": "Features & Specs",
+    "use_and_care": "Use & Care"
+  }
+  

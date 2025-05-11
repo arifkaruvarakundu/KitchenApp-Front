@@ -27,7 +27,6 @@ const ProductDetailView = ({ route, navigation }) => {
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [campaignDetails, setCampaignDetails] = useState(null);
 
   const { t } = useTranslation('ProductDetails');
   const { i18n } = useTranslation();
@@ -39,9 +38,22 @@ const ProductDetailView = ({ route, navigation }) => {
         const data = response.data;
         console.log("data@@@@", data)
         setFetchedProduct(data);
-        // setVariants(data.variants);
-        // setSelectedVariant(data.variants[0]); // Default to first variant
-        // setCurrentImageIndex(0);
+        setVariants(data.variants);
+
+        if (data.variants && data.variants.length > 0) {
+          setSelectedVariant(data.variants[0]);
+        } else {
+          setSelectedVariant({
+            id: data.id,
+            price: data.price,
+            variant_images: data.product_images.map(img => ({ image_url: `${img.image}` })),
+            brand: null,
+            liter: null,
+            weight: null,
+          });
+        }
+        
+        setCurrentImageIndex(0);
       } catch (err) {
         console.error('Error fetching product:', err);
       }
@@ -64,18 +76,13 @@ const ProductDetailView = ({ route, navigation }) => {
     }
   };
 
-  const handleBrandSelect = (brand) => {
-    const variant = variants.find((v) => v.brand === brand);
-    if (variant) {
-      setSelectedVariant(variant);
-    }
-  };
+  // const handleBrandSelect = (brand) => {
+  //   const variant = variants.find((v) => v.brand === brand);
+  //   if (variant) {
+  //     setSelectedVariant(variant);
+  //   }
+  // };
 
-  const calculateCampaignPrice = (price, campaign_discount_percentage) => {
-    const campaignPrice = price - (price * campaign_discount_percentage / 100)
-    return campaignPrice 
-
-  };
 
 //   const uniqueBrands = [...new Set(variants.map(v => v.brand))];
 
@@ -97,15 +104,17 @@ const ProductDetailView = ({ route, navigation }) => {
     }
   
     const itemToAdd = {
-      id: selectedVariant.id,
-      productId: fetchedProduct.id,
-      name: fetchedProduct.product_name,
-      brand: selectedVariant.brand,
-      price: selectedVariant.price,
-      image: selectedVariant.variant_images?.[0]?.image_url || '',
+      id: selectedVariant?.id,
+      productId: fetchedProduct?.id,
+      name: fetchedProduct?.product_name,
+      brand: selectedVariant?.brand,
+      price: selectedVariant?.price,
+      image: selectedVariant?.product_images?.[0]?.image
+              ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant?.product_images[0].image}`
+              : selectedVariant?.product_variants?.[0]?.variant_images?.[0]?.image_url || '',
       quantity: quantity,
-      liter: selectedVariant.liter,
-      weight: selectedVariant.weight,
+      liter: selectedVariant?.liter,
+      weight: selectedVariant?.weight,
     };
   
     try {
@@ -124,112 +133,27 @@ const ProductDetailView = ({ route, navigation }) => {
   const handleNextImage = () => {
     if (!selectedVariant?.variant_images) return;
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === selectedVariant.variant_images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === selectedVariant?.variant_images?.length - 1 ? 0 : prevIndex + 1
     );
   };
   
   const handlePrevImage = () => {
     if (!selectedVariant?.variant_images) return;
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? selectedVariant.variant_images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? selectedVariant?.variant_images?.length - 1 : prevIndex - 1
     );
   };
 
-  useEffect(() => {
-    if (!fetchedProduct || !Array.isArray(fetchedProduct.variants)) return;
-    if (!selectedVariant?.id) return;
   
-    const campaignVariants = fetchedProduct.variants.filter((variant) => variant.is_in_campaign);
-    // console.log("Campaign Variants:", campaignVariants);
   
-    if (campaignVariants.length > 0) {
-      axios.get(`${API_BASE_URL}/campaigns/`)
-        .then((response) => {
-          console.log("Campaigns Data from API:", response.data);
-
-          const filteredCampaigns = response.data.filter((campaign) =>
-            !(campaign.has_ended) && !(campaign.current_quantity===0|| campaign.current_participants===0));
-  
-          const relatedCampaign = filteredCampaigns.find(
-            (campaign) => parseInt(campaign.variant.id) === selectedVariant.id
-          );
-  
-          // console.log("Related Campaign:", relatedCampaign);
-  
-          if (relatedCampaign) {
-            setCampaignDetails(relatedCampaign);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching campaigns:", error);
-        });
-    }
-  }, [selectedVariant?.id, fetchedProduct?.variants]);
-  
-  const handleDealClick = async (dealType, navigation) => {
-    // if (!selectedPaymentOption) {
-    //   alert("Please select a payment option.");
-    //   return;
-    // }
-    // console.log("deal clicked")
-  
-    const selectedVariantDetails = selectedVariant;
-
-    // console.log("selectedVariantDetails:",selectedVariantDetails)
-  
-    // if (!selectedVariantDetails) {
-    //   alert("No variant selected.");
-    //   return;
-    // }
-  
-    // setSelectedVariant(selectedVariantDetails);
-  
-    const payload = {
-      variant: selectedVariant,
-      quantity: quantity,
-      // payment_option: selectedPaymentOption,
-      payment_option: dealType,
-    };
-  
-    try {
-      if (!selectedVariantDetails.is_in_campaign) {
-        // Store details in localStorage for starting a campaign
-        await AsyncStorage.setItem("start_campaign_details", JSON.stringify(payload));
-        
-        
-        navigation.navigate("StartCampaign");
-      }
-      else{
-      await AsyncStorage.setItem("campaign_details", JSON.stringify(payload));
-  
-      const campaignId = campaignDetails?.id || fetchedProduct?.id; // fallback if needed
-      navigation.navigate("CampaignDetails", {
-        id: campaignId,
-        deal_type: dealType,
-      });
-      }
-  
-    } catch (error) {
-      console.error("❌ Error handling deal click:", error);
-      alert("Something went wrong. Check the console for details.");
-    }
-  };
-
-  const currentParticipants = campaignDetails?.current_participants ?? 0;
-  const targetQuantity = selectedVariant?.minimum_order_quantity_for_offer ?? 0;
-  const currentQuantity = campaignDetails?.current_quantity ?? 0;
-  const quantityLeft = Math.max(targetQuantity - currentQuantity, 0);
-  const progress = targetQuantity ? (currentQuantity / targetQuantity) * 100 : 0;
-
-  
-  if (!fetchedProduct || !selectedVariant) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#228B22" />
-        <Text style={styles.loadingText}>{t("loading")}</Text>
-      </View>
-    );
-  }
+  // if (!fetchedProduct || !selectedVariant) {
+  //   return (
+  //     <View style={styles.loaderContainer}>
+  //       <ActivityIndicator size="large" color="#228B22" />
+  //       <Text style={styles.loadingText}>{t("loading")}</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <ScrollView style={styles.container}>
@@ -239,10 +163,17 @@ const ProductDetailView = ({ route, navigation }) => {
   </TouchableOpacity>
 
   <Image
-    source={{ uri: selectedVariant.variant_images?.[currentImageIndex]?.image_url }}
-    style={styles.image}
-    resizeMode="cover"
-  />
+  source={{
+    uri:
+      selectedVariant?.variant_images?.[currentImageIndex]?.image_url
+        ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant.variant_images[currentImageIndex].image_url}`
+        : fetchedProduct?.product_images?.[0]?.image
+        ? `https://res.cloudinary.com/dvdhtcsfz/${fetchedProduct.product_images[0].image}`
+        : 'https://via.placeholder.com/150',
+  }}
+  style={styles.image}
+  resizeMode="cover"
+/>
 
   <TouchableOpacity style={styles.arrowRight} onPress={handleNextImage}>
     <Text style={styles.arrowText}>›</Text>
@@ -253,8 +184,8 @@ const ProductDetailView = ({ route, navigation }) => {
       <View style={styles.detailsContainer}>
       <View style={styles.topRow}>
   <View style={styles.leftInfo}>
-    <Text style={styles.title}>{i18n.language === "ar" ? fetchedProduct.product_name_ar : fetchedProduct.product_name}</Text>
-    <Text style={styles.price}>{t("price")}: {selectedVariant.price} {t("kd")}</Text>
+    <Text style={styles.title}>{i18n.language === "ar" ? fetchedProduct?.product_name_ar : fetchedProduct?.product_name}</Text>
+    <Text style={styles.price}>{t("price")}: {selectedVariant?.price} {t("kd")}</Text>
     {/* <Text style={styles.price}>{t("campaignPrice")}: {parseFloat(calculateCampaignPrice(selectedVariant.price, selectedVariant.campaign_discount_percentage)).toFixed(3)} {t("kd")}</Text> */}
   </View>
 
@@ -286,10 +217,10 @@ const ProductDetailView = ({ route, navigation }) => {
 
     {/* Volume or Weight */}
     <Text style={styles.volumeText}>
-      {selectedVariant.liter
-        ? `${selectedVariant.liter} L`
-        : selectedVariant.weight
-        ? `${selectedVariant.weight} kg`
+      {selectedVariant?.liter
+        ? `${selectedVariant?.liter} L`
+        : selectedVariant?.weight
+        ? `${selectedVariant?.weight} kg`
         : ''}
     </Text>
   </View>
@@ -311,54 +242,33 @@ const ProductDetailView = ({ route, navigation }) => {
             <Text style={styles.cartButtonText}>{t("add_to_cart")}</Text>
           </TouchableOpacity>
         </View>
-        {selectedVariant?.is_in_campaign && (
-            <View style={styles.groupProgressSection}>
-              <View style={styles.groupInfo}>
-                <Text style={styles.groupTitle}>{t("group_campaign_active")}</Text>
-                <Text style={styles.groupStats}>
-                  <Text style={styles.boldText}>{currentParticipants}</Text> {t("participants")} ·{' '}
-                  <Text style={styles.boldText}>{quantityLeft}</Text> {t("more_to_unlock")}
-                </Text>
-              </View>
 
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${progress}%` }]} />
-              </View>
+        {/* Features Section */}
+{fetchedProduct?.features?.length > 0 && (
+  <>
+    <Text style={styles.sectionTitle}>{t("features")}</Text>
+    {fetchedProduct?.features?.map((feature, index) => (
+        <Text key={index} style={styles.featureItem}>
+          • {i18n.language === 'ar' ? feature.key_ar : feature.key} : {i18n.language === 'ar' ? feature.value_ar : feature.value}
+        </Text>
+      ))}
+  </>
+)}
 
-              <View style={styles.progressLabels}>
-                <Text style={styles.labelText}>{t("current")}: {currentQuantity}</Text>
-                <Text style={styles.labelText}>{t("target")}: {targetQuantity}</Text>
-              </View>
-            </View>
-          )}
-
-        <View style={styles.dealRow}>
-          <TouchableOpacity
-            style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("free", navigation)}
-          >
-            <Text style={styles.dealText}>
-              {fetchedProduct?.is_in_campaign ? t("join_free") : t("start_free")}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("basic", navigation)}
-          >
-            <Text style={styles.dealText}>{t("early_bird")}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("premium", navigation)}
-          >
-            <Text style={styles.dealText}>{t("vip_deal")}</Text>
-          </TouchableOpacity>
-        </View>
+{/* Use & Care Section */}
+{fetchedProduct?.use_and_care && (
+  <>
+    <Text style={styles.sectionTitle}>{t("use_and_care")}</Text>
+    <Text style={styles.description}>
+      {i18n.language === "ar"
+        ? fetchedProduct.use_and_care_ar
+        : fetchedProduct.use_and_care}
+    </Text>
+  </>
+)}
 
         <Text style={styles.sectionTitle}>{t("description")}</Text>
-        <Text style={styles.description}>{i18n.language === "ar" ? fetchedProduct.description_ar : fetchedProduct.description_en}</Text>
+        <Text style={styles.description}>{i18n.language === "ar" ? fetchedProduct?.description_ar : fetchedProduct?.description}</Text>
       </View>
     </ScrollView>
   );
@@ -632,6 +542,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
+
+  featureItem: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#555',
+    marginBottom: 6,
+  },
+  
 });
 
 

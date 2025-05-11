@@ -13,8 +13,8 @@ import cartEN from './locales/en/Cart.json';
 import cartAR from './locales/ar/Cart.json';
 import SignInUpEN from './locales/en/SignIn_SignUp.json';
 import SignInUpAR from './locales/ar/SignIn_SignUp.json';
-// import ProductDetailsEN from './locales/en/ProductDetails.json';
-// import ProductDetailsAR from './locales/ar/ProductDetails.json';
+import ProductDetailsEN from './locales/en/ProductDetails.json';
+import ProductDetailsAR from './locales/ar/ProductDetails.json';
 // import StackEN from './locales/en/Stack.json';
 // import StackAR from './locales/ar/Stack.json';
 import AccountEN from './locales/en/Account.json';
@@ -32,7 +32,7 @@ const resources = {
     shop: shopEN,
     cart: cartEN,
     SignIn_SignUp: SignInUpEN,
-    // ProductDetails: ProductDetailsEN,
+    ProductDetails: ProductDetailsEN,
     // Stack: StackEN,
     Account: AccountEN,
     // CampaignDetail: CampaignDetailEN,
@@ -44,7 +44,7 @@ const resources = {
     shop: shopAR,
     cart: cartAR,
     SignIn_SignUp: SignInUpAR,
-    // ProductDetails: ProductDetailsAR,
+    ProductDetails: ProductDetailsAR,
     // Stack: StackAR,
     Account: AccountAR,
     // CampaignDetail: CampaignDetailAR,
@@ -68,7 +68,7 @@ i18n
       'shop',
       'cart',
       'SignIn_SignUp',
-      // 'ProductDetails',
+      'ProductDetails',
       // 'Stack',
       'Account',
       // 'CampaignDetail',

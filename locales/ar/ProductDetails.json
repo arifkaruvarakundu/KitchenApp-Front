@@ -1,0 +1,24 @@
+{
+    "loading": "جارٍ تحميل تفاصيل المنتج...",
+    "brand": "العلامة التجارية",
+    "add_to_cart": "أضف إلى السلة",
+    "start_free": "ابدأ مجانًا",
+    "campaignPrice": "سعر الحملة",
+    "price": "السعر",
+    "kd": "د.ك",
+    "join_free": "انضم مجانًا",
+    "group_campaign_active": "حملة جماعية نشطة",
+    "participants": "مشاركون",
+    "more_to_unlock": "المتبقي للوصول لسعر الحملة",
+    "current": "الحالي",
+    "target": "الهدف",
+    "early_bird": "مبكر - خصم إضافي 5٪",
+    "vip_deal": "صفقة VIP - خصم 25٪ إضافي",
+    "description": "الوصف",
+    "error_invalid_product": "خطأ: اختيار منتج غير صالح.",
+    "success_item_added": "تم: تمت إضافة العنصر إلى السلة!",
+    "error_add_failed": "خطأ: فشل في إضافة العنصر إلى السلة.",
+    "features":"الميزات والمواصفات",
+    "use_and_care": "الاستخدام والعناية"
+  }
+  

@@ -124,7 +124,7 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
         data={categories}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={3}
+        numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.gridContent}
       />
@@ -181,7 +181,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 8,
     backgroundColor: "#f9f9f9",
-    maxWidth: width / 3 - 15, // Adjust spacing
+    maxWidth: width / 2 - 15,
+    height: 150
   },
   // sellerContainer: {
   //   width: width / 3.5,
@@ -193,8 +194,8 @@ const styles = StyleSheet.create({
   //   backgroundColor: "#f9f9f9",
   // },
   imageContainer: {
-    width: 70,
-    height: 70,
+    width: 90,
+    height: 90,
     borderRadius: 35,
     overflow: "hidden",
     marginBottom: 8,

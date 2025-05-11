@@ -35,7 +35,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
   
   const BATCH_SIZE = 5;
 
-  console.log("arabic categoryname:",categoryNameAR, categoryName)
+  console.log("arabic categoryname:",categoryId,categoryNameAR, categoryName)
 
   const currentLanguage = i18n.language;
 
@@ -51,10 +51,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
       try {
         const response = await axios.get(`${API_BASE_URL}/products/`);
         console.log("Fetched products:", response.data);
-
-        response.data.forEach((product, index) => {
-            console.log(`Product ${index + 1} images:`, product.product_images);
-          });
+        // console.log("Sample product category:", products[0]?.category);
 
         setProducts(response.data);
         setFilteredProducts(response.data); 
@@ -165,7 +162,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
   useEffect(() => {
     if (!products.length) return;
     if (categoryId) {
-      // console.log("category name:#########:",categoryName)
+      console.log("category name:#########:",categoryName)
       const filtered = products.filter((p) => Number(p.category) === Number(categoryId));
       setFilteredProducts(filtered);
       setShowAll(false)
@@ -174,6 +171,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
       // console.log("filtered Products:", filteredProducts)
     }
   }, [categoryId, products]);
+
 
   const handleViewAll = () => {
     if (!products || products.length === 0) return; // Prevent action if products are empty
