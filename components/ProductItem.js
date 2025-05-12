@@ -51,7 +51,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
       try {
         const response = await axios.get(`${API_BASE_URL}/products/`);
         console.log("Fetched products:", response.data);
-        // console.log("Sample product category:", products[0]?.category);
+        // console.log("Sample product category:", products[0]?.product_images);
 
         setProducts(response.data);
         setFilteredProducts(response.data); 
@@ -163,7 +163,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     if (!products.length) return;
     if (categoryId) {
       console.log("category name:#########:",categoryName)
-      const filtered = products.filter((p) => Number(p.category) === Number(categoryId));
+      const filtered = products.filter((p) => Number(p.category.id) === Number(categoryId));
       setFilteredProducts(filtered);
       setShowAll(false)
     } else {

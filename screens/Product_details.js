@@ -102,20 +102,27 @@ const ProductDetailView = ({ route, navigation }) => {
       Alert.alert("Info", "You have already added this to the cart.");
       return;
     }
-  
+
+    const rawImage =
+      selectedVariant?.product_images?.[0]?.image ||
+      selectedVariant?.variant_images?.[0]?.image_url;
+
+    const image = rawImage?.startsWith("http")
+      ? rawImage
+      : `https://res.cloudinary.com/dvdhtcsfz/${rawImage || ''}`;
+
     const itemToAdd = {
       id: selectedVariant?.id,
       productId: fetchedProduct?.id,
       name: fetchedProduct?.product_name,
       brand: selectedVariant?.brand,
       price: selectedVariant?.price,
-      image: selectedVariant?.product_images?.[0]?.image
-              ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant?.product_images[0].image}`
-              : selectedVariant?.product_variants?.[0]?.variant_images?.[0]?.image_url || '',
+      image: image,
       quantity: quantity,
       liter: selectedVariant?.liter,
       weight: selectedVariant?.weight,
     };
+
   
     try {
       dispatch(addToCart(itemToAdd));

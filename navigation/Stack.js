@@ -11,7 +11,7 @@ import Account from '../screens/Account';
 // import OrdersScreen from '../screens/Orders_screen';
 // import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
-// import ShopCheckoutScreen from '../screens/Checkout_screen';
+import ShopCheckoutScreen from '../screens/Checkout_screen';
 // import NotificationScreen from '../screens/Notification_screen';
 import { useTranslation } from 'react-i18next';
 
@@ -103,10 +103,10 @@ export const CartStackNavigator = () => {
         component={ShoppingCart} 
         options={{ headerShown: false }} 
       />
-        {/* <Stack.Screen 
+        <Stack.Screen 
         name="Checkout" 
         component={ShopCheckoutScreen} 
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

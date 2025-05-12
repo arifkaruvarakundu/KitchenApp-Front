@@ -15,7 +15,7 @@ import axios from 'axios';
 const Account = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [orderCount, setOrderCount] = useState(0);
-  const [campaignCount, setCampaignCount] = useState(0);
+  // const [campaignCount, setCampaignCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
 
   const dispatch = useDispatch();
@@ -145,9 +145,9 @@ const Account = () => {
         axios.get(`${API_BASE_URL}/user_orders/`, {
           headers: { 'Authorization': `Bearer ${token}` },
         }),
-        axios.get(`${API_BASE_URL}/user_campaigns/`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        }),
+        // axios.get(`${API_BASE_URL}/user_campaigns/`, {
+        //   headers: { 'Authorization': `Bearer ${token}` },
+        // }),
         axios.get(`${API_BASE_URL}/notifications/`, {
           headers: {
             'Content-Type': 'application/json',
@@ -158,13 +158,13 @@ const Account = () => {
       ]);
   
       const ordersData = ordersResponse.data;
-      const campaignsData =  campaignsResponse.data;
+      // const campaignsData =  campaignsResponse.data;
       const notificationsData = notificationsResponse.data;
       const unreadNotifications = notificationsData.filter((notification) => !notification.is_read);
       const totalOrdersCount = (ordersData.orders.length || 0) + (ordersData.campaign_orders.length || 0);
   
       setOrderCount(totalOrdersCount || 0);
-      setCampaignCount(campaignsData.length || 0);
+      // setCampaignCount(campaignsData.length || 0);
       setNotificationCount(unreadNotifications.length || 0);
   
     } catch (error) {
@@ -195,7 +195,7 @@ const Account = () => {
   const options = [
     { icon: 'location-outline', label: 'Address', onPress: () => navigation.navigate('Address') },
     { icon: 'receipt-outline', label: 'Orders', onPress: () => navigation.navigate('OrdersScreen'), count: orderCount },
-    { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen'), count: campaignCount },
+    // { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen'), count: campaignCount },
     { icon: 'notifications-outline', label: 'Notifications', onPress: () => navigation.navigate('NotificationsScreen'), count: notificationCount },
   ];
 
