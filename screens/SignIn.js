@@ -7,12 +7,14 @@ import API_BASE_URL from "../config";
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import Feather from 'react-native-vector-icons/Feather';
 
 export default function Login({ navigation }) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (name, value) => {
     setFormData({
@@ -78,12 +80,24 @@ export default function Login({ navigation }) {
         Alert.alert(t("failed"), data.message || t("invalidCredentials"));
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Toast.show({
-        type: 'error',
-        text1: t("networkError"),
-      });
-    }
+        console.error('Login error:', error);
+        
+        if (error.response && error.response.status === 401) {
+          const errorMsg =
+            error.response.data?.errors?.non_field_errors?.[0] ||
+            t("invalidCredentials");  // Use your translated fallback
+          
+          Toast.show({
+            type: 'error',
+            text1: errorMsg,
+          });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: t("networkError"),
+          });
+        }
+      }
   };
 
   return (
@@ -99,13 +113,29 @@ export default function Login({ navigation }) {
         autoCapitalize="none"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder={t("passwordPlaceholder")}
-        value={formData.password}
-        onChangeText={(value) => handleChange('password', value)}
-        secureTextEntry
-      />
+     <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder={t("passwordPlaceholder")}
+          value={formData.password}
+          onChangeText={(value) => handleChange('password', value)}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
+          <Feather
+            name={showPassword ? 'eye' : 'eye-off'}
+            size={20}
+            color="#1a7cc1"
+          />
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ForgotPassword')}
+        style={styles.forgotPasswordContainer}
+      >
+        <Text style={styles.forgotPasswordText}>{t("forgotPassword")}</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>{t("button")}</Text>
@@ -122,12 +152,14 @@ export default function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     padding: 24,
     justifyContent: 'center',
     backgroundColor: '#f9f9f9',
   },
+
   header: {
     fontSize: 30,
     fontWeight: 'bold',
@@ -135,6 +167,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
   },
+
   input: {
     height: 50,
     borderColor: '#ddd',
@@ -145,29 +178,69 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
+
   button: {
-    backgroundColor: '#4CAF50', // Matching color from SignUp
+    backgroundColor: '#1a7cc1', // Matching color from SignUp
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
   },
+
   buttonText: {
     color: 'white',
     fontSize: 18,
   },
+
   footerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
+
   footerText: {
     fontSize: 16,
     color: '#555',
   },
+
   linkText: {
     fontSize: 16,
-    color: '#4CAF50',
+    color: '#1a7cc1',
     fontWeight: 'bold',
   },
+
+  passwordContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  borderColor: '#ddd',
+  borderWidth: 1,
+  borderRadius: 10,
+  paddingHorizontal: 15,
+  backgroundColor: '#fff',
+  marginBottom: 15,
+},
+
+passwordInput: {
+  flex: 1,
+  height: 50,
+  fontSize: 16,
+},
+
+toggleText: {
+  color: '#4CAF50',
+  fontWeight: 'bold',
+  paddingHorizontal: 10,
+},
+
+forgotPasswordContainer: {
+  alignItems: 'flex-end',
+  marginBottom: 10,
+},
+
+forgotPasswordText: {
+  color: '#1a7cc1',
+  fontSize: 14,
+  fontWeight: 'bold',
+},
+
 });

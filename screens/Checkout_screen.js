@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#1a7cc1',
     padding: 15,
     borderRadius: 6,
     alignItems: 'center',

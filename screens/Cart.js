@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 15,
-    color: '#222',
+    color: '#1a7cc1',
     marginTop: 4,
   },
   actionsContainer: {
@@ -219,10 +219,10 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#1a7cc1',
   },
   checkoutButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#1a7cc1',
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 8,

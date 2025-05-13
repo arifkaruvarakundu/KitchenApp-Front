@@ -12,6 +12,12 @@ import Account from '../screens/Account';
 // import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
 import ShopCheckoutScreen from '../screens/Checkout_screen';
+import ForgotPassword from '../screens/ForgotPassword';
+import ResetPassword from '../screens/ResetPassword';
+import SignIn from '../screens/SignIn';
+import SignUp from '../screens/SignUp';
+
+
 // import NotificationScreen from '../screens/Notification_screen';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +33,22 @@ export const HomeStackNavigator = () => {
         component={HomePage} 
         options={{ headerShown: false }} 
       />
+      <Stack.Screen 
+        name="ForgotPassword" 
+        component={ForgotPassword} 
+        options={{ headerShown: true }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const AuthStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+      <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ title: 'Forgot Password' }} />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ title: 'Forgot Password' }} />
     </Stack.Navigator>
   );
 };
@@ -75,6 +97,7 @@ export const AccountStackNavigator = () =>{
         component = {AddressScreen}
         options={() => ({ title: t('address') })}
       />
+      
       {/* <Stack.Screen
         name = "OrdersScreen"
         component = {OrdersScreen}
@@ -94,7 +117,7 @@ export const AccountStackNavigator = () =>{
   );
 };
 
-// Home Stack
+// cart Stack
 export const CartStackNavigator = () => {
   return (
     <Stack.Navigator>
@@ -110,3 +133,5 @@ export const CartStackNavigator = () => {
     </Stack.Navigator>
   );
 };
+
+

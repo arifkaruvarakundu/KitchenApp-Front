@@ -282,12 +282,12 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
           style={styles.addToCartButton}
           onPress={() => handleIncrease(item)}
         >
-          <AntDesign name="pluscircle" size={24} color="#499c5d" />
+          <AntDesign name="pluscircle" size={24} color="#1a7cc1" />
         </TouchableOpacity>
       ) : (
         <View style={styles.quantityControl}>
           <TouchableOpacity onPress={() => handleDecrease(item)}>
-            <AntDesign name="minuscircleo" size={24} color="#499c5d" />
+            <AntDesign name="minuscircleo" size={24} color="#1a7cc1" />
           </TouchableOpacity>
           <Text style={{
             marginHorizontal: 10,
@@ -300,7 +300,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
             {localQuantities[item.id]}
           </Text>
           <TouchableOpacity onPress={() => handleIncrease(item)}>
-            <AntDesign name="pluscircleo" size={24} color="#499c5d" />
+            <AntDesign name="pluscircleo" size={24} color="#1a7cc1" />
           </TouchableOpacity>
         </View>
       )}
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 14,
-    color: "#499c5d",
+    color: "#1a7cc1",
     marginRight: 5,
   },
   gridContent: {

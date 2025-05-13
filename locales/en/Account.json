@@ -68,7 +68,7 @@
     "cancelCampaign": "Cancel Campaign",
     "loading": "Loading your campaigns...",
     "cancelSuccess": "Campaign cancelled.",
-    "cancelError": "Could not cancel campaign.",
+    "cancelError": "Could not cancel campaign."
 
 }
   

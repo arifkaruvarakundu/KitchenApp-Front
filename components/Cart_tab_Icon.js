@@ -11,8 +11,12 @@ const CartTabIcon = ({ color, size, focused }) => {
     <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
       <View style={{
         backgroundColor: focused ? '#eaf5ec' : 'transparent',
-        borderRadius: 25,
-        padding: 1,
+              borderRadius: 6,
+              width: size + 12,         // Square just slightly larger than icon
+              height: size + 12,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 2,
       }}>
         <Ionicons 
           name="cart-outline" 

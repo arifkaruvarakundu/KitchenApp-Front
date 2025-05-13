@@ -7,6 +7,7 @@ import { setAuthenticated } from '../redux/authSlice'; // Ensure correct import 
 import API_BASE_URL from '../config'; // Ensure correct API path
 import { useTranslation } from 'react-i18next'; // Import translation hook
 import Toast from 'react-native-toast-message';
+import Feather from 'react-native-vector-icons/Feather'; // Import Feather icons
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -16,11 +17,12 @@ const SignUp = () => {
     password: '',
     confirmPassword: '',
   });
-
   const navigation = useNavigation(); // Initialize navigation
   const dispatch = useDispatch();
   const { t } = useTranslation('SignIn_SignUp'); // Initialize translation
   const { i18n } = useTranslation(); // Initialize i18n
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Handle form input changes
   const handleInputChange = (name, value) => {
@@ -143,21 +145,39 @@ const SignUp = () => {
         onChangeText={(text) => handleInputChange('email', text)}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder={t("passwordPlaceholderUp")}
-        secureTextEntry
-        value={formData.password}
-        onChangeText={(text) => handleInputChange('password', text)}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder={t("passwordPlaceholderUp")}
+          secureTextEntry={!showPassword}
+          value={formData.password}
+          onChangeText={(text) => handleInputChange('password', text)}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
+          <Feather
+            name={showPassword ? 'eye' : 'eye-off'}
+            size={20}
+            color="#1a7cc1"
+          />
+        </TouchableOpacity>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder={t("confirmPasswordPlaceholder")}
-        secureTextEntry
-        value={formData.confirmPassword}
-        onChangeText={(text) => handleInputChange('confirmPassword', text)}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder={t("confirmPasswordPlaceholder")}
+          secureTextEntry={!showConfirmPassword}
+          value={formData.confirmPassword}
+          onChangeText={(text) => handleInputChange('confirmPassword', text)}
+        />
+        <TouchableOpacity onPress={() => setShowConfirmPassword(prev => !prev)}>
+          <Feather
+            name={showConfirmPassword ? 'eye' : 'eye-off'}
+            size={20}
+            color="#1a7cc1"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>{t("buttonUp")}</Text>
@@ -200,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#1a7cc1',
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
@@ -221,9 +241,25 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontSize: 16,
-    color: '#4CAF50',
+    color: '#1a7cc1',
     fontWeight: 'bold',
   },
+  passwordContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  borderColor: '#ddd',
+  borderWidth: 1,
+  borderRadius: 10,
+  paddingHorizontal: 15,
+  backgroundColor: '#fff',
+  marginBottom: 15,
+},
+passwordInput: {
+  flex: 1,
+  height: 50,
+  fontSize: 16,
+},
+
 });
 
 export default SignUp;

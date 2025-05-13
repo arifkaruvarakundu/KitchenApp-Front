@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: '600',
-    color: '#228B22',
+    color: '#1a7cc1',
   },
   rightInfo: {
     flexShrink: 1,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   qtyButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#E6F2E6',
+    backgroundColor: '#cee9f8',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   qtyText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#228B22',
+    color: '#1a7cc1',
   },
   qtyDisplay: {
     marginHorizontal: 12,
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   },
   cartButton: {
     flex: 1,
-    backgroundColor: '#228B22',
+    backgroundColor: '#1a7cc1',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',

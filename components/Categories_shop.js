@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     color: "red",
   },
   selectedCategory: {
-    backgroundColor: '#b6e4af',  // light green or any color you want
+    backgroundColor: '#58b3e4',  // light green or any color you want
     borderColor: '#499c5d',
     borderWidth: 2,
   },

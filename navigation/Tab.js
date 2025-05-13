@@ -2,7 +2,7 @@
 import React from 'react';
 import {View, Text, Platform} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {HomeStackNavigator, ShopStackNavigator, AccountStackNavigator, CartStackNavigator} from './Stack';
+import {HomeStackNavigator, ShopStackNavigator, AccountStackNavigator, CartStackNavigator, AuthStackNavigator} from './Stack';
 // import Profile from '../screens/Profile';
 // import Account from '../screens/Account';
 import SignUp from '../screens/SignUp';
@@ -73,8 +73,12 @@ export default function TabNavigator() {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{
               backgroundColor: focused ? '#eaf5ec' : 'transparent',
-              borderRadius: 25,
-              padding: 1,
+              borderRadius: 6,
+              width: size + 12,         // Square just slightly larger than icon
+              height: size + 12,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 2,          // Helps vertical centering in tab bar
             }}>
               <Ionicons 
                 name="home-outline" 
@@ -95,8 +99,12 @@ export default function TabNavigator() {
     tabBarIcon: ({ color, size, focused }) => (
       <View style={{
         backgroundColor: focused ? '#eaf5ec' : 'transparent',
-        borderRadius: 25,
-        padding: 1,
+              borderRadius: 6,
+              width: size + 12,         // Square just slightly larger than icon
+              height: size + 12,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 2,
       }}>
         <Ionicons 
           name="storefront-outline" 
@@ -136,71 +144,58 @@ export default function TabNavigator() {
 />
 
   {isAuthenticated ? (
-    <Tab.Screen 
-      name="AccountTab" 
-      component={AccountStackNavigator} 
-      options={{
-        headerShown: false,
-        title: t('account'),
-        tabBarIcon: ({ color, size, focused }) => (
-          <View style={{
-            backgroundColor: focused ? '#eaf5ec' : 'transparent',
-            borderRadius: 25,
-            padding: 1,
-          }}>
-            <Ionicons 
-              name="person-outline" 
-              size={focused ? size + 2 : size} 
-              color={focused ? '#1a3c40' : color} 
-            />
-          </View>
-        ),
-      }}
-    />
-  ) : (
-    <>
-      <Tab.Screen 
-        name="SignUp" 
-        component={SignUp} 
-        options={{
-          title: t('signUp'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={{
-              backgroundColor: focused ? '#eaf5ec' : 'transparent',
-              borderRadius: 25,
-              padding: 1,
-            }}>
-              <Ionicons 
-                name="person-add-outline" 
-                size={focused ? size + 2 : size} 
-                color={focused ? '#1a3c40' : color} 
-              />
-            </View>
-          ),
-        }} 
-      />
-      <Tab.Screen 
-        name="SignIn" 
-        component={SignIn} 
-        options={{
-          title: t('signIn'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={{
-              backgroundColor: focused ? '#eaf5ec' : 'transparent',
-              borderRadius: 25,
-              padding: 1,
-            }}>
-              <Ionicons 
-                name="log-in-outline" 
-                size={focused ? size + 2 : size} 
-                color={focused ? '#1a3c40' : color} 
-              />
-            </View>
-          ),
-        }} 
-      />
-    </>
-  )}
+  <Tab.Screen 
+    name="AccountTab" 
+    component={AccountStackNavigator} 
+    options={{
+      headerShown: false,
+      title: t('account'),
+      tabBarIcon: ({ color, size, focused }) => (
+        <View style={{
+          backgroundColor: focused ? '#eaf5ec' : 'transparent',
+              borderRadius: 6,
+              width: size + 12,         // Square just slightly larger than icon
+              height: size + 12,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 2,
+        }}>
+          <Ionicons 
+            name="person-outline" 
+            size={focused ? size + 2 : size} 
+            color={focused ? '#1a3c40' : color} 
+          />
+        </View>
+      ),
+    }}
+  />
+) : (
+  <Tab.Screen 
+    name="AuthTab"
+    component={AuthStackNavigator} // ⬅️ This wraps SignIn, SignUp, ForgotPassword
+    options={{
+      title: t('signIn'), // You can change this label to "Account" or "Login"
+      tabBarIcon: ({ color, size, focused }) => (
+        <View style={{
+          backgroundColor: focused ? '#eaf5ec' : 'transparent',
+              borderRadius: 6,
+              width: size + 12,         // Square just slightly larger than icon
+              height: size + 12,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 2,
+        }}>
+          <Ionicons 
+            name="log-in-outline" 
+            size={focused ? size + 2 : size} 
+            color={focused ? '#1a3c40' : color} 
+          />
+        </View>
+      ),
+    }}
+  />
+)}
+
 </Tab.Navigator>
 
   );

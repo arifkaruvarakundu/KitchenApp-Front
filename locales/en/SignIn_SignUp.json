@@ -26,7 +26,8 @@
     "passwordMismatch": "Passwords do not match.",
     "successUp": "Sign up successful!",
     "error": "Something went wrong.",
-    "networkErrorUp": "Network error. Please try again."
+    "networkErrorUp": "Network error. Please try again.",
+    "forgotPassword": "Forgot Password?"
   
   }
 
