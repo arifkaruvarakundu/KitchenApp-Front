@@ -102,7 +102,7 @@ const Header = () => {
               }}
             >
               <Feather name="box" size={18} color="#444" style={{ marginRight: 8 }} />
-              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.product_name_ar : item.product_name_en}</Text>
+              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.product_name_ar : item.product_name}</Text>
             </TouchableOpacity>
           ))}
         </>
@@ -127,7 +127,7 @@ const Header = () => {
               }}
             >
               <Feather name="tag" size={18} color="#444" style={{ marginRight: 8 }} />
-              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.name_ar : item.name_en}</Text>
+              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.category_name_ar : item.category_name}</Text>
             </TouchableOpacity>
           ))}
         </>

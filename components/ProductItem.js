@@ -106,8 +106,9 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
       id: item?.id,
       productId: item?.productId || item.id,
       name: item?.product_name,
-      brand: item?.variants?.[0]?.brand,
-      price: item?.price,
+      brand: item?.brand,
+      color: item?.variants?.[0]?.color,
+      price: item?.variants?.[0]?.price || item?.price,
       image:
             item?.product_images?.[0]?.image
             ? `https://res.cloudinary.com/dvdhtcsfz/${item.product_images[0].image}`

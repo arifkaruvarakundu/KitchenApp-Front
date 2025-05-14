@@ -174,7 +174,7 @@ export default function TabNavigator() {
     name="AuthTab"
     component={AuthStackNavigator} // ⬅️ This wraps SignIn, SignUp, ForgotPassword
     options={{
-      title: t('signIn'), // You can change this label to "Account" or "Login"
+      title: t('SignIn/SignUp'), // You can change this label to "Account" or "Login"
       tabBarIcon: ({ color, size, focused }) => (
         <View style={{
           backgroundColor: focused ? '#eaf5ec' : 'transparent',

@@ -60,7 +60,8 @@ const ShoppingCart = () => {
         <Image source={{ uri: item.image }} style={styles.image} />
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{i18n.language === "ar" ? item.name_ar : item.name}</Text>
-          <Text style={styles.brand}>{item.brand}</Text>
+          {/* <Text style={styles.brand}>{item.brand}</Text> */}
+          <Text style={styles.brand}>{item.color}</Text>
           <Text style={styles.price}>${parseFloat(item.price).toFixed(2)}</Text>
         </View>
         <View style={styles.actionsContainer}>

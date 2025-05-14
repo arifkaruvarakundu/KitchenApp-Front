@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { updateCartItemQuantity, addToCart } from '../redux/cartSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import RNPickerSelect from 'react-native-picker-select';
 
 const ProductDetailView = ({ route, navigation }) => {
   const { productId, quantity: initialQuantity } = route.params;
@@ -41,17 +42,24 @@ const ProductDetailView = ({ route, navigation }) => {
         setVariants(data.variants);
 
         if (data.variants && data.variants.length > 0) {
-          setSelectedVariant(data.variants[0]);
-        } else {
-          setSelectedVariant({
-            id: data.id,
-            price: data.price,
-            variant_images: data.product_images.map(img => ({ image_url: `${img.image}` })),
-            brand: null,
-            liter: null,
-            weight: null,
-          });
-        }
+            setSelectedVariant({
+              ...data.variants[0],
+              brand: data.brand,
+              price: data.variants[0].price || data.price,
+              variant_images: data.product_images.filter(img => img.variant?.id === data.variants[0]?.id).map(img => ({ image_url: img.image })),
+            });
+          } else {
+            // Fallback if no variants
+            setSelectedVariant({
+              id: data.id,
+              brand: data.brand,
+              price: data.price,
+              variant_images: data.product_images.filter(img => img.variant?.id === data.variants[0]?.id).map(img => ({ image_url: img.image })),
+
+              liter: null,
+              weight: null,
+            });
+          }
         
         setCurrentImageIndex(0);
       } catch (err) {
@@ -76,15 +84,27 @@ const ProductDetailView = ({ route, navigation }) => {
     }
   };
 
-  // const handleBrandSelect = (brand) => {
-  //   const variant = variants.find((v) => v.brand === brand);
-  //   if (variant) {
-  //     setSelectedVariant(variant);
-  //   }
-  // };
+  const handleBrandSelect = (brand) => {
+    const variant = variants.find((v) => v.brand === brand);
+    if (variant) {
+      setSelectedVariant(variant);
+    }
+  };
 
+  const uniqueBrands = fetchedProduct?.brand ? [fetchedProduct.brand] : [];
 
-//   const uniqueBrands = [...new Set(variants.map(v => v.brand))];
+  const handleColorSelect = (variantId) => {
+  const variant = variants.find((v) => v.id === variantId);
+  if (variant) {
+    setSelectedVariant({
+      ...variant,
+      brand: fetchedProduct.brand,
+      price: variant.price || fetchedProduct.price,
+      variant_images: fetchedProduct.product_images.filter(img => img.variant?.id === variant.id).map(img => ({ image_url: img.image })),
+    });
+    setCurrentImageIndex(0);
+  }
+};
 
   const handleAddToCart = () => {
     console.log("cartItems:@@@",cartItems)
@@ -95,7 +115,7 @@ const ProductDetailView = ({ route, navigation }) => {
 
     // ✅ Check if any item in the cart has the same productId
     const isInCart = Object.values(cartItems).some(
-      item => item.productId === fetchedProduct.id
+      item => item.id === selectedVariant.id
     );
 
     if (isInCart) {
@@ -119,8 +139,7 @@ const ProductDetailView = ({ route, navigation }) => {
       price: selectedVariant?.price,
       image: image,
       quantity: quantity,
-      liter: selectedVariant?.liter,
-      weight: selectedVariant?.weight,
+      color: selectedVariant?.color
     };
 
   
@@ -179,7 +198,7 @@ const ProductDetailView = ({ route, navigation }) => {
         : 'https://via.placeholder.com/150',
   }}
   style={styles.image}
-  resizeMode="cover"
+  resizeMode="contain"
 />
 
   <TouchableOpacity style={styles.arrowRight} onPress={handleNextImage}>
@@ -191,46 +210,45 @@ const ProductDetailView = ({ route, navigation }) => {
       <View style={styles.detailsContainer}>
       <View style={styles.topRow}>
   <View style={styles.leftInfo}>
-    <Text style={styles.title}>{i18n.language === "ar" ? fetchedProduct?.product_name_ar : fetchedProduct?.product_name}</Text>
-    <Text style={styles.price}>{t("price")}: {selectedVariant?.price} {t("kd")}</Text>
-    {/* <Text style={styles.price}>{t("campaignPrice")}: {parseFloat(calculateCampaignPrice(selectedVariant.price, selectedVariant.campaign_discount_percentage)).toFixed(3)} {t("kd")}</Text> */}
-  </View>
+  <Text style={styles.title}>
+    {i18n.language === "ar" ? fetchedProduct?.product_name_ar : fetchedProduct?.product_name}
+  </Text>
+  <Text style={styles.price}>
+    {t("price")}: {selectedVariant?.price} {t("kd")}
+  </Text>
 
-  <View style={styles.rightInfo}>
-    {/* Brand Selection (Now Inline) */}
-    {/* <Text style={styles.sectionTitle}>{t("brand")}</Text>
-    <View style={styles.brandOptions}>
-      {uniqueBrands.map((brand) => (
-        <TouchableOpacity
-          key={brand}
-          style={[
-            styles.brandButton,
-            selectedVariant.brand === brand && styles.brandButtonActive,
-          ]}
-          onPress={() => handleBrandSelect(brand)}
-          disabled={uniqueBrands.length === 1}
-        >
-          <Text
-            style={[
-              styles.brandButtonText,
-              selectedVariant.brand === brand && styles.brandButtonTextActive,
-            ]}
-          >
-            {brand}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View> */}
-
-    {/* Volume or Weight */}
-    <Text style={styles.volumeText}>
-      {selectedVariant?.liter
-        ? `${selectedVariant?.liter} L`
-        : selectedVariant?.weight
-        ? `${selectedVariant?.weight} kg`
-        : ''}
+  {/* Brand and Color Dropdown (moved here) */}
+  <View style={styles.variantSection}>
+  {/* Brand Row */}
+  <View style={styles.variantRow}>
+    <Text style={styles.variantLabel}>{t("brand")}</Text>
+    <Text style={styles.variantValue}>
+      {fetchedProduct?.brand || t("not_available")}
     </Text>
   </View>
+
+  {/* Color Dropdown Row */}
+  <View style={styles.variantRow}>
+    <Text style={styles.variantLabel}>{t("color")}</Text>
+    <View style={styles.pickerWrapper}>
+      <RNPickerSelect
+        onValueChange={(variantId) => handleColorSelect(variantId)}
+        items={variants.map((variant) => ({
+          label: i18n.language === 'ar' ? variant.color_ar : variant.color,
+          value: variant.id,
+        }))}
+        placeholder={{ label: t("select_color"), value: null }}
+        value={selectedVariant?.id}
+        style={{
+          inputIOS: styles.pickerInput,
+          inputAndroid: styles.pickerInput,
+        }}
+        useNativeAndroidPickerStyle={false}
+      />
+    </View>
+  </View>
+</View>
+</View>
 </View>
 
         {/* Quantity & Add to Cart */}
@@ -288,8 +306,10 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 340,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    // borderBottomLeftRadius: 24,
+    // borderBottomRightRadius: 24,
+    borderRadius: 24,  // Apply border radius to all corners
+    overflow: 'hidden', // Ensure the image stays within the border radius
   },
   detailsContainer: {
     padding: 20,
@@ -315,16 +335,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1a7cc1',
   },
-  rightInfo: {
-    flexShrink: 1,
-    alignItems: 'flex-end',
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 6,
     color: '#444',
   },
+  defaultBrandText: {
+  fontSize: 16,
+  color: '#555',
+  paddingVertical: 5,
+},
   brandOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -556,6 +577,92 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 6,
   },
+  rowWrapperAligned: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 10,
+  gap: 12,
+},
+
+rowItemAligned: {
+  flex: 1,
+},
+labelTextAligned: {
+  fontSize: 16,
+  fontWeight: '600',
+  marginBottom: 4,
+  color: '#444',
+},
+
+valueTextAligned: {
+  fontSize: 16,
+  color: '#444',
+  fontWeight: '500',
+},
+readOnlyValue: {
+  fontSize: 16,
+  fontWeight: '500',
+  marginTop: 4,
+  color: '#444',
+},
+dropdownAligned: {
+  fontSize: 16,
+  paddingVertical: 6,  // Reduce height
+  paddingHorizontal: 12,
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  backgroundColor: '#f9f9f9',
+  color: 'black',
+},
+
+variantSection: {
+  marginTop: 20,
+  padding: 12,
+  backgroundColor: '#f8f8f8',
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '#e0e0e0',
+},
+
+variantRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: 16,
+},
+
+variantLabel: {
+  fontSize: 16,
+  fontWeight: '600',
+  color: '#333',
+  width: 90,
+},
+
+variantValue: {
+  flex: 1,
+  fontSize: 16,
+  fontWeight: '500',
+  color: '#555',
+  textAlign: 'left',
+},
+
+pickerWrapper: {
+  flex: 1,
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  backgroundColor: '#fff',
+  paddingVertical: 4,
+  paddingHorizontal: 10,
+},
+
+pickerInput: {
+  fontSize: 16,
+  color: '#333',
+  paddingVertical: 6,
+},
   
 });
 
