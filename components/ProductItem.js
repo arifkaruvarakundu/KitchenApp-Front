@@ -79,17 +79,6 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     }
   };
   
-  // const handleAddToCart = (product) => {
-  //   dispatch(addToCart({ ...product, quantity: 1 }));
-  // };
-
-  // const handleIncrease = (productId) => {
-  //   setLocalQuantities(prev => ({
-  //     ...prev,
-  //     [productId]: (prev[productId] || 1) + 1
-  //   }));
-  // };
-
   const handleIncrease = (item) => {
     const currentQty = localQuantities[item.id] || 0;
     const isInCart = !!cartItems?.[item.id?.toString()];
@@ -103,20 +92,15 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     }));
   
     const itemToAdd = {
-      id: item?.id,
-      productId: item?.productId || item.id,
-      name: item?.product_name,
-      brand: item?.brand,
-      color: item?.variants?.[0]?.color,
-      price: item?.variants?.[0]?.price || item?.price,
-      image:
-            item?.product_images?.[0]?.image
-            ? `https://res.cloudinary.com/dvdhtcsfz/${item.product_images[0].image}`
-            : item?.product_variants?.[0]?.variant_images?.[0]?.image_url || '',
-            quantity: newQty,
-      liter: item?.variants?.[0]?.liter,
-      weight: item?.variants?.[0]?.weight,
-    };
+      id: item.id,
+      productId: item.id,
+      name: item.product_name,
+      price: item.price,
+      image: item?.default_image?.image
+        ? `https://res.cloudinary.com/dvdhtcsfz/${item.default_image.image}`
+        : '',
+      quantity: newQty,
+  };
   
     if (!isInCart) {
       dispatch(addToCart(itemToAdd));
@@ -173,7 +157,6 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     }
   }, [categoryId, products]);
 
-
   const handleViewAll = () => {
     if (!products || products.length === 0) return; // Prevent action if products are empty
   
@@ -209,7 +192,6 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
   //   return (current / target) * 100;
   // };
 
-
   const formatTime = (dateString) => {
     const expiryDate = new Date(dateString);
     const now = new Date();
@@ -235,48 +217,14 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
       <View style={styles.imageContainer}>
         <Image
            source={{
-            uri:
-              item?.product_images?.[0]?.image
-                ? `https://res.cloudinary.com/dvdhtcsfz/${item.product_images[0].image}`
-                : 'https://via.placeholder.com/150',
+              uri: item?.default_image?.image
+              ? `https://res.cloudinary.com/dvdhtcsfz/${item.default_image.image}`
+              : 'https://via.placeholder.com/150'
             }}
           style={styles.dealImage}
           resizeMode="cover"
         />
-        {/* {item?.variants?.[0]?.is_in_campaign && (
-        <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>{t("campaign")}</Text>
-        </View>
-        )} */}
       </View>
-
-      {/* {!localQuantities[item.id] ? (
-        <TouchableOpacity
-          style={styles.addToCartButton}
-          onPress={() => handleIncrease(item.id)}
-        >
-          <AntDesign name="pluscircle" size={24} color="#499c5d" />
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.quantityControl}>
-          <TouchableOpacity onPress={() => handleDecrease(item.id)}>
-            <AntDesign name="minuscircleo" size={24} color="#499c5d" />
-          </TouchableOpacity>
-          <Text style={{
-            marginHorizontal: 10,
-            fontSize: 16,
-            fontWeight: "bold",
-            color: "#333",
-            minWidth: 20,
-            textAlign: "center"
-          }}>
-            {localQuantities[item.id]}
-          </Text>
-          <TouchableOpacity onPress={() => handleIncrease(item.id)}>
-            <AntDesign name="pluscircleo" size={24} color="#499c5d" />
-          </TouchableOpacity>
-        </View>
-      )} */}
 
       {!localQuantities[item.id] ? (
         <TouchableOpacity
@@ -315,41 +263,6 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
           <Text style={styles.campaignPrice}>{t("kd")}: {parseFloat(item?.price || item?.variants?.[0]?.price || 0).toFixed(3)}</Text>
           {/* <Text style={styles.actualPrice}></Text> */}
         </View>
-
-        {/* <View style={styles.progressContainer}>
-          <View style={styles.progressBarBackground}>
-            <View
-              style={[
-                styles.progressBarFill,
-                {
-                  width: `${calculateProgress(
-                    item.currentQuantity,
-                    item.targetQuantity
-                  )}%`,
-                },
-              ]}
-            />
-          </View>
-          <View style={styles.progressTextContainer}>
-            <Text style={styles.progressText}>
-              {item.currentQuantity}/{item.targetQuantity} joined
-            </Text>
-            <Text style={styles.timeLeftText}>
-              {formatTime(item.expiryDate)}
-            </Text>
-          </View>
-        </View> */}
-
-        {/* <Text style={styles.minOrderText}>
-        {t("campaignPrice")}: {parseFloat(calculateCampaignPrice(item?.variants?.[0]?.price, item?.variants?.[0]?.campaign_discount_percentage)).toFixed(3)} {t("kd")}
-        </Text> */}
-
-        {/* <TouchableOpacity
-          style={styles.joinButton}
-          onPress={() => handleJoinGroup(item.id)}
-        >
-          <Text style={styles.joinButtonText}>Join</Text>
-        </TouchableOpacity> */}
       </View>
     </TouchableOpacity>
   );
