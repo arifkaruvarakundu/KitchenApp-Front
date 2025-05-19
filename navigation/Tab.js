@@ -17,7 +17,12 @@ import CartTabIcon from '../components/Cart_tab_Icon';
 import { StackActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setCartItems } from '../redux/cartSlice'; // adjust path if needed
+import { API_BASE_URL } from '../config'; // or wherever you define your base URL
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +31,36 @@ export default function TabNavigator() {
   const { bottom } = useSafeAreaInsets();
 
   const isAuthenticated = useSelector(state=> state.auth.isAuthenticated)
+
+  const dispatch = useDispatch();
+
+useEffect(() => {
+  const fetchUserCart = async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      if (!token) return;
+
+      console.log("Fetching cart with token:", token);
+      console.log("Resolved API_BASE_URL:", API_BASE_URL);
+      console.log("Using API URL:", `${API_BASE_URL}/cart_details/`);
+
+      const response = await axios.get(`${API_BASE_URL}/cart_details/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const items = response.data.items || [];
+      dispatch(setCartItems(items));
+    } catch (error) {
+      console.error('Error fetching authenticated user cart:', error?.response?.data || error.message);
+    }
+  };
+
+  fetchUserCart();
+}, [isAuthenticated]);
 
   return (
     
@@ -55,8 +90,8 @@ export default function TabNavigator() {
             shadowRadius: 4,
             elevation: 5,
           },
-          tabBarActiveTintColor: '#1a3c40',
-          tabBarInactiveTintColor: '#4f4f4f',
+          tabBarActiveTintColor: '#ffffff',
+          tabBarInactiveTintColor: '#ffffff',
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: '600',

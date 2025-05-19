@@ -80,8 +80,10 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
   };
   
   const handleIncrease = (item) => {
+    const variantId = item.default_variant?.id || item.id; // fallback
     const currentQty = localQuantities[item.id] || 0;
-    const isInCart = !!cartItems?.[item.id?.toString()];
+    const isInCart = !!cartItems?.[variantId];
+    // const isInCart = !!cartItems?.[item.id?.toString()];
     // const isInCart = !!cartItems?.[selectedVariant.id?.toString()];
   
     const newQty = currentQty + 1;
@@ -92,7 +94,8 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     }));
   
     const itemToAdd = {
-      id: item.id,
+      // id: item.id,
+      id: variantId,
       productId: item.id,
       name: item.product_name,
       price: item.price,
@@ -109,7 +112,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
         text1: t("successaddcart"),
       });
     } else {
-      dispatch(updateCartItemQuantity({ id: item.id, quantity: newQty }));
+      dispatch(updateCartItemQuantity({ id: variantId, quantity: newQty }));
     }
   };
 
@@ -132,7 +135,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
         [item.id]: currentQty - 1,
       }));
   
-      dispatch(updateCartItemQuantity({ id: item.id, quantity: currentQty - 1 }));
+      dispatch(updateCartItemQuantity({ id: variantId, quantity: currentQty - 1 }));
     }
   };
   
@@ -183,29 +186,6 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     });
   };
 
-  // const handleJoinGroup = (id) => {
-  //   // Placeholder: implement join logic
-  //   console.log("Joining group with ID:", id);
-  // };
-
-  // const calculateProgress = (current, target) => {
-  //   return (current / target) * 100;
-  // };
-
-  const formatTime = (dateString) => {
-    const expiryDate = new Date(dateString);
-    const now = new Date();
-    const diffTime = expiryDate - now;
-
-    if (diffTime <= 0) return "Expired";
-
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(
-      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-
-    return diffDays > 0 ? `${diffDays}d ${diffHours}h left` : `${diffHours}h left`;
-  };
 
   const renderItem = ({ item }) => (
 

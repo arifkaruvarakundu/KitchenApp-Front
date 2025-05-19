@@ -30,7 +30,7 @@ const ShopCheckoutScreen = () => {
 
   const navigation = useNavigation();
   const cartItems = useSelector(selectCartItems);
-  // console.log("cartItems:",cartItems)
+  console.log("cartItems:",cartItems)
   const [userDetails, setUserDetails] = useState(null);
   const [address, setAddress] = useState({
     first_name: '',
@@ -47,6 +47,12 @@ const ShopCheckoutScreen = () => {
       try {
         const token = await AsyncStorage.getItem('access_token');
         const email = await AsyncStorage.getItem('email');
+
+        if (!token || !email) {
+        // Guest user, stop loading and show address form
+        setLoading(false);
+        return;
+        }
 
         const response = await axios.get(`${API_BASE_URL}/user_details/`, {
           headers: {
@@ -135,27 +141,77 @@ const ShopCheckoutScreen = () => {
     );
   }
 
+  const isGuest = !userDetails;
+  const isAddressEmpty = !address?.first_name || !address?.street_address;
+  const shouldShowAddressForm = isGuest || isAddressEmpty;
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Checkout</Text>
 
       {/* Address */}
-      <Text style={styles.sectionHeader}>Delivery Address</Text>
-      <View style={{ marginVertical: 10 }}>
-        <Text style={{ fontWeight: '500' }}>{address.first_name} {address.last_name}</Text>
-        <Text>{address.street_address}, {address.city}, {address.zipcode}</Text>
-        <Text>{address.phone_number}</Text>
-      </View>
+     <Text style={styles.sectionHeader}>Shipping Address</Text>
 
-      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.changeAddressButton}>
-        <Text style={styles.changeAddressText}>Change Address</Text>
-      </TouchableOpacity>
+{shouldShowAddressForm ? (
+  <View style={{ marginBottom: 20 }}>
+    <TextInput
+      placeholder="First Name"
+      style={styles.input}
+      value={address.first_name}
+      onChangeText={(val) => handleChange('first_name', val)}
+    />
+    <TextInput
+      placeholder="Last Name"
+      style={styles.input}
+      value={address.last_name}
+      onChangeText={(val) => handleChange('last_name', val)}
+    />
+    <TextInput
+      placeholder="Street Address"
+      style={styles.input}
+      value={address.street_address}
+      onChangeText={(val) => handleChange('street_address', val)}
+    />
+    <TextInput
+      placeholder="City"
+      style={styles.input}
+      value={address.city}
+      onChangeText={(val) => handleChange('city', val)}
+    />
+    <TextInput
+      placeholder="Zipcode"
+      style={styles.input}
+      value={address.zipcode}
+      onChangeText={(val) => handleChange('zipcode', val)}
+    />
+    <TextInput
+      placeholder="Phone Number"
+      style={styles.input}
+      value={address.phone_number}
+      onChangeText={(val) => handleChange('phone_number', val)}
+    />
+  </View>
+) : (
+  <>
+    <View style={{ marginVertical: 10 }}>
+      <Text style={{ fontWeight: '500' }}>{address.first_name} {address.last_name}</Text>
+      <Text>{address.street_address}, {address.city}, {address.zipcode}</Text>
+      <Text>{address.phone_number}</Text>
+    </View>
+    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.changeAddressButton}>
+      <Text style={styles.changeAddressText}>Change Address</Text>
+    </TouchableOpacity>
+  </>
+)}
+
 
       
       {/* Cart Items */}
       <Text style={styles.sectionHeader}>Order Details</Text>
       {cartItems.map((item, idx) => {
     const quantity = item.quantity;
+    const product_name = item.name;
     const price = parseFloat(item?.variant?.price || item?.price || 0);
     const subtotal = (quantity * price).toFixed(2);
     const brand = item?.variant?.brand || item?.brand || 'No Brand';
@@ -172,6 +228,7 @@ const ShopCheckoutScreen = () => {
                 style={styles.productImage}
               />
               <View style={{ flex: 1, marginLeft: 10 }}>
+                <Text style={styles.productTitle}>{product_name}</Text>
                 <Text style={styles.productTitle}>{brand}</Text>
                 
                 <View style={styles.priceRow}>

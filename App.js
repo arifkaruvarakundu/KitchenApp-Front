@@ -10,17 +10,41 @@ import TabNavigator from './navigation/Tab';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { CartProvider } from './context/CartContext'; // make sure path matches
 
 export default function App() {
+
+  useEffect(() => {
+  const fetchCart = async () => {
+    const cartUuid = await AsyncStorage.getItem('cart_uuid');
+    if (!cartUuid) return;
+
+    try {
+      const response = await axios.get(`${API_BASE_URL}/cart_details/`, {
+        params: { cart_uuid: cartUuid },
+      });
+      dispatch(setCartItems(response.data.items)); // Your Redux cart setter
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  };
+
+  fetchCart();
+}, []);
+
+
+
   
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <SafeAreaProvider>
+          <CartProvider>
           <NavigationContainer>
             <TabNavigator />
               <Toast />
           </NavigationContainer>
+          </CartProvider>
         </SafeAreaProvider>
       </PersistGate>
     </Provider>

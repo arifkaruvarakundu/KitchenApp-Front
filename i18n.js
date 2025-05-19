@@ -53,8 +53,10 @@ const resources = {
   },
 };
 
-// Detect the device's language (fallback to 'en' if not supported)
-const localeCode = Localization.locale.split('-')[0]; // "en-US" -> "en"
+let localeCode = 'en';
+if (typeof Localization.locale === 'string') {
+  localeCode = Localization.locale.split('-')[0];
+}
 const deviceLanguage = ['en', 'ar'].includes(localeCode) ? localeCode : 'en';
 
 i18n

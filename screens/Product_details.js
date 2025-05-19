@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   ScrollView,
@@ -8,15 +8,21 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Modal,
+  Pressable,
+  Platform
   } from 'react-native';
 import axios from 'axios';
 import API_BASE_URL from '../config';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { CartContext } from '../context/CartContext'; 
 import { updateCartItemQuantity, addToCart } from '../redux/cartSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import RNPickerSelect from 'react-native-picker-select';
+import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const ProductDetailView = ({ route, navigation }) => {
   const { productId, quantity: initialQuantity } = route.params;
@@ -28,9 +34,13 @@ const ProductDetailView = ({ route, navigation }) => {
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageViewerVisible, setImageViewerVisible] = useState(false);
 
   const { t } = useTranslation('ProductDetails');
   const { i18n } = useTranslation();
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
+  const { cartUuid, updateCartUuid } = useContext(CartContext); 
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -93,68 +103,105 @@ const ProductDetailView = ({ route, navigation }) => {
 
   const uniqueBrands = fetchedProduct?.brand ? [fetchedProduct.brand] : [];
 
-  const handleColorSelect = (variantId) => {
+const handleColorSelect = (selected) => {
+  const variantId = selected?.value || selected; // handles both full object and ID
   const variant = variants.find((v) => v.id === variantId);
   if (variant) {
     setSelectedVariant({
       ...variant,
       brand: fetchedProduct.brand,
       price: variant.price || fetchedProduct.price,
-      variant_images: fetchedProduct.product_images.filter(img => img.variant?.id === variant.id).map(img => ({ image_url: img.image })),
+      variant_images: fetchedProduct.product_images
+        .filter((img) => img.variant?.id === variant.id)
+        .map((img) => ({ image_url: img.image })),
     });
     setCurrentImageIndex(0);
   }
 };
 
-  const handleAddToCart = () => {
-    console.log("cartItems:@@@",cartItems)
-    if (!selectedVariant || !selectedVariant.id || !fetchedProduct?.product_name) {
-      Alert.alert(t("error_invalid_product"));
-      return;
-    }
+  const handleAddToCart = async () => {
+  console.log("cartItems:@@@", cartItems);
 
-    // ✅ Check if any item in the cart has the same productId
-    const isInCart = Object.values(cartItems).some(
-      item => item.id === selectedVariant.id
-    );
+  if (!selectedVariant || !selectedVariant.id || !fetchedProduct?.product_name) {
+    Alert.alert(t("error_invalid_product"));
+    return;
+  }
 
-    if (isInCart) {
-      Alert.alert("Info", "You have already added this to the cart.");
-      return;
-    }
+  const isInCart = Object.values(cartItems).some(
+    item => item.id === selectedVariant.id
+  );
 
-    const rawImage =
-      selectedVariant?.product_images?.[0]?.image ||
-      selectedVariant?.variant_images?.[0]?.image_url;
+  if (isInCart) {
+    Alert.alert("Info", "You have already added this to the cart.");
+    return;
+  }
 
-    const image = rawImage?.startsWith("http")
-      ? rawImage
-      : `https://res.cloudinary.com/dvdhtcsfz/${rawImage || ''}`;
+  const rawImage =
+    selectedVariant?.product_images?.[0]?.image ||
+    selectedVariant?.variant_images?.[0]?.image_url;
 
-    const itemToAdd = {
-      id: selectedVariant?.id,
-      productId: fetchedProduct?.id,
-      name: fetchedProduct?.product_name,
-      brand: selectedVariant?.brand,
-      price: selectedVariant?.price,
-      image: image,
-      quantity: quantity,
-      color: selectedVariant?.color
-    };
+  const image = rawImage?.startsWith("http")
+    ? rawImage
+    : `https://res.cloudinary.com/dvdhtcsfz/${rawImage || ''}`;
 
-  
-    try {
-      dispatch(addToCart(itemToAdd));
-      // Alert.alert("Success", "Item added to cart!");
-      Toast.show({
-        type: 'success',
-        text1: t("success_item_added"),
-      });
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      Alert.alert(t("error_add_failed"));
-    }
+  const itemToAdd = {
+    id: selectedVariant.id,
+    productId: fetchedProduct.id,
+    name: fetchedProduct.product_name,
+    brand: selectedVariant.brand,
+    price: selectedVariant.price,
+    image: image,
+    quantity: quantity,
+    color: selectedVariant.color,
   };
+
+  // 🚨 Use isAuthenticated to branch logic
+  if (!isAuthenticated && cartUuid) {
+    console.log("Guest user - saving cart locally only");
+    dispatch(addToCart(itemToAdd));
+
+    Toast.show({
+      type: 'success',
+      text1: t("success_item_added"),
+    });
+
+    return;
+  }
+
+  // ✅ Authenticated user - call API
+  try {
+    console.log("Authenticated user - sending to backend");
+    const token = await AsyncStorage.getItem('access_token')
+    const response = await axios.post(`${API_BASE_URL}/add_to_cart/`, {
+      product_id: fetchedProduct.id,
+      variant_id: selectedVariant.id,
+      quantity,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // If needed
+      }
+    });
+
+    const data = response.data;
+
+    if (data.cart_uuid) {
+      await AsyncStorage.setItem('cart_uuid', data.cart_uuid);
+      updateCartUuid(data.cart_uuid);
+    }
+
+    dispatch(addToCart(itemToAdd));
+
+    Toast.show({
+      type: 'success',
+      text1: t("success_item_added"),
+    });
+
+  } catch (error) {
+    console.error("Cart API error:", error?.response?.data || error.message);
+    Alert.alert(t("error_add_failed"), error?.response?.data?.message || error.message);
+  }
+};
 
   const handleNextImage = () => {
     if (!selectedVariant?.variant_images) return;
@@ -170,85 +217,83 @@ const ProductDetailView = ({ route, navigation }) => {
     );
   };
 
+  const data = variants.map((variant) => ({
+    label: i18n.language === 'ar' ? variant.color_ar : variant.color,
+    value: variant.id,
+  }));
   
-  
-  // if (!fetchedProduct || !selectedVariant) {
-  //   return (
-  //     <View style={styles.loaderContainer}>
-  //       <ActivityIndicator size="large" color="#228B22" />
-  //       <Text style={styles.loadingText}>{t("loading")}</Text>
-  //     </View>
-  //   );
-  // }
+  if (!fetchedProduct || !selectedVariant) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#228B22" />
+        <Text style={styles.loadingText}>{t("loading")}</Text>
+      </View>
+    );
+  }
 
   return (
+    <>
     <ScrollView style={styles.container}>
       <View style={styles.imageWrapper}>
-  <TouchableOpacity style={styles.arrowLeft} onPress={handlePrevImage}>
-    <Text style={styles.arrowText}>‹</Text>
-  </TouchableOpacity>
+        <TouchableOpacity style={styles.arrowLeft} onPress={handlePrevImage}>
+          <Text style={styles.arrowText}>‹</Text>
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => setImageViewerVisible(true)}> */}
+          <Image
+          source={{
+            uri:
+              selectedVariant?.variant_images?.[currentImageIndex]?.image_url
+                ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant.variant_images[currentImageIndex].image_url}`
+                : fetchedProduct?.product_images?.[0]?.image
+                ? `https://res.cloudinary.com/dvdhtcsfz/${fetchedProduct.product_images[0].image}`
+                : 'https://via.placeholder.com/150',
+          }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+        {/* </TouchableOpacity> */}
 
-  <Image
-  source={{
-    uri:
-      selectedVariant?.variant_images?.[currentImageIndex]?.image_url
-        ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant.variant_images[currentImageIndex].image_url}`
-        : fetchedProduct?.product_images?.[0]?.image
-        ? `https://res.cloudinary.com/dvdhtcsfz/${fetchedProduct.product_images[0].image}`
-        : 'https://via.placeholder.com/150',
-  }}
-  style={styles.image}
-  resizeMode="contain"
-/>
-
-  <TouchableOpacity style={styles.arrowRight} onPress={handleNextImage}>
-    <Text style={styles.arrowText}>›</Text>
-  </TouchableOpacity>
-</View>
+        <TouchableOpacity style={styles.arrowRight} onPress={handleNextImage}>
+          <Text style={styles.arrowText}>›</Text>
+        </TouchableOpacity>
+      </View>
 
 
       <View style={styles.detailsContainer}>
-      <View style={styles.topRow}>
-  <View style={styles.leftInfo}>
-  <Text style={styles.title}>
-    {i18n.language === "ar" ? fetchedProduct?.product_name_ar : fetchedProduct?.product_name}
-  </Text>
-  <Text style={styles.price}>
-    {t("price")}: {selectedVariant?.price} {t("kd")}
-  </Text>
+        <View style={styles.topRow}>
+          <View style={styles.leftInfo}>
+            <Text style={styles.title}>
+              {i18n.language === "ar" ? fetchedProduct?.product_name_ar : fetchedProduct?.product_name}
+            </Text>
+            <Text style={styles.price}>
+              {t("price")}: {selectedVariant?.price} {t("kd")}
+            </Text>
 
   {/* Brand and Color Dropdown (moved here) */}
-  <View style={styles.variantSection}>
-  {/* Brand Row */}
-  <View style={styles.variantRow}>
-    <Text style={styles.variantLabel}>{t("brand")}</Text>
-    <Text style={styles.variantValue}>
-      {fetchedProduct?.brand || t("not_available")}
-    </Text>
-  </View>
+    <View style={styles.variantSection}>
+      { /* Brand Row */}
+      <View style={styles.variantRow}>
+        <Text style={styles.variantLabel}>{t("brand")}</Text>
+        <Text style={styles.variantValue}>
+          {fetchedProduct?.brand || t("not_available")}
+        </Text>
+      </View>
 
-  {/* Color Dropdown Row */}
-  <View style={styles.variantRow}>
-    <Text style={styles.variantLabel}>{t("color")}</Text>
-    <View style={styles.pickerWrapper}>
-      <RNPickerSelect
-        onValueChange={(variantId) => handleColorSelect(variantId)}
-        items={variants.map((variant) => ({
-          label: i18n.language === 'ar' ? variant.color_ar : variant.color,
-          value: variant.id,
-        }))}
-        placeholder={{ label: t("select_color"), value: null }}
+        {/* Color Dropdown Row */}
+      <View style={styles.variantRow}>
+        <Text style={styles.variantLabel}>{t("color")}</Text>
+         <Dropdown
+        style={styles.dropdown}
+        data={data}
+        labelField="label"
+        valueField="value"
+        placeholder={t('select_color')}
         value={selectedVariant?.id}
-        style={{
-          inputIOS: styles.pickerInput,
-          inputAndroid: styles.pickerInput,
-        }}
-        useNativeAndroidPickerStyle={false}
+        onChange={handleColorSelect}
       />
+      </View>
     </View>
   </View>
-</View>
-</View>
 </View>
 
         {/* Quantity & Add to Cart */}
@@ -296,6 +341,31 @@ const ProductDetailView = ({ route, navigation }) => {
         <Text style={styles.description}>{i18n.language === "ar" ? fetchedProduct?.description_ar : fetchedProduct?.description}</Text>
       </View>
     </ScrollView>
+    {/* Fullscreen Image Modal */}
+    <Modal visible={isImageViewerVisible} transparent={true}>
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.95)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => setImageViewerVisible(false)}
+      >
+        <Image
+          source={{
+            uri:
+              selectedVariant?.variant_images?.[currentImageIndex]?.image_url
+                ? `https://res.cloudinary.com/dvdhtcsfz/${selectedVariant.variant_images[currentImageIndex].image_url}`
+                : fetchedProduct?.product_images?.[0]?.image
+                ? `https://res.cloudinary.com/dvdhtcsfz/${fetchedProduct.product_images[0].image}`
+                : 'https://via.placeholder.com/150',
+          }}
+          style={{ width: '90%', height: '90%', resizeMode: 'contain' }}
+        />
+      </Pressable>
+    </Modal>
+    </>
   );
 };
 
@@ -663,6 +733,24 @@ pickerInput: {
   color: '#333',
   paddingVertical: 6,
 },
+pickerIOSContainer: {
+  flex: 1,
+  justifyContent: 'center',
+},
+picker: {
+  height: Platform.OS === 'ios' ? 180 : 50,
+  fontSize: 16,
+  color: '#333',
+},
+dropdown: {
+    flex: 1,
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+  },
   
 });
 
