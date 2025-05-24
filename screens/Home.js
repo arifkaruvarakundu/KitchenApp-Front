@@ -11,9 +11,6 @@ const HomePage = () => {
   const navigation = useNavigation();
   
   // const [refreshing, setRefreshing] = useState(false);
-  // const onRefresh = useCallback(() => {
-  //   setRefreshing(true);
-  // }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -25,7 +22,6 @@ const HomePage = () => {
         renderItem={null}
         ListHeaderComponent={
           <>
-            
             <CarouselHomePage data={data} />
             <CategoriesHome navigation={navigation} />
             {/* Add more sections as needed */}

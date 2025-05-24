@@ -69,20 +69,20 @@ const ShopCheckoutScreen = () => {
         const billingAddress = user.addresses?.find(addr => addr.address_type === 'billing') || {};
 
         setAddress({
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        street_address: billingAddress.street_address || '',
-        city: billingAddress.city || '',
-        zipcode: billingAddress.zipcode || '',
-        country: billingAddress.country || 'KUWAIT',
-        phone_number: billingAddress.phone_number || '',
-        });
-      } catch (err) {
-        console.log('Error fetching profile:', err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+            first_name: user.first_name || '',
+            last_name: user.last_name || '',
+            street_address: billingAddress.street_address || '',
+            city: billingAddress.city || '',
+            zipcode: billingAddress.zipcode || '',
+            country: billingAddress.country || 'KUWAIT',
+            phone_number: billingAddress.phone_number || '',
+            });
+          } catch (err) {
+            console.log('Error fetching profile:', err.response?.data || err.message);
+          } finally {
+            setLoading(false);
+          }
+        };
 
     fetchDetails();
   }, []);
@@ -129,9 +129,39 @@ const ShopCheckoutScreen = () => {
     }
   };
 
-  const handlePlaceOrder=()=>{
-    alert('order placed')
+  const handlePlaceOrder = async () => {
+  try {
+    const payload = {
+      items: cartItems.map(item => ({
+        variant_id: item?.variant?.id,
+        quantity: item.quantity
+      }))
+    };
+
+    const token = await AsyncStorage.getItem('access_token'); // or however you store it
+
+    const res = await axios.post(`${API_BASE_URL}/place_order/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`  // or Bearer if JWT
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (res.status === 201) {
+      alert(`Order placed! ID: ${data.order_id}`);
+      dispatch(clearCart())
+    } else {
+      alert(`Error: ${data.error || 'Something went wrong'}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to place order');
   }
+};
+
 
   if (loading) {
     return (
@@ -141,9 +171,9 @@ const ShopCheckoutScreen = () => {
     );
   }
 
-  const isGuest = !userDetails;
-  const isAddressEmpty = !address?.first_name || !address?.street_address;
-  const shouldShowAddressForm = isGuest || isAddressEmpty;
+  // const isGuest = !userDetails;
+  // const isAddressEmpty = !address?.first_name || !address?.street_address;
+  // const shouldShowAddressForm = isGuest || isAddressEmpty;
 
 
   return (
@@ -153,7 +183,7 @@ const ShopCheckoutScreen = () => {
       {/* Address */}
      <Text style={styles.sectionHeader}>Shipping Address</Text>
 
-{shouldShowAddressForm ? (
+{/* {shouldShowAddressForm ? (
   <View style={{ marginBottom: 20 }}>
     <TextInput
       placeholder="First Name"
@@ -193,7 +223,7 @@ const ShopCheckoutScreen = () => {
     />
   </View>
 ) : (
-  <>
+  <> */}
     <View style={{ marginVertical: 10 }}>
       <Text style={{ fontWeight: '500' }}>{address.first_name} {address.last_name}</Text>
       <Text>{address.street_address}, {address.city}, {address.zipcode}</Text>
@@ -202,8 +232,8 @@ const ShopCheckoutScreen = () => {
     <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.changeAddressButton}>
       <Text style={styles.changeAddressText}>Change Address</Text>
     </TouchableOpacity>
-  </>
-)}
+  {/* </>
+)} */}
 
 
       

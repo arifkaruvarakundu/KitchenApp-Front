@@ -8,7 +8,7 @@ import AddressScreen from '../screens/Address_Screen';
 import Account from '../screens/Account';
 // import CampaignDetailView from '../screens/Campaign_detail';
 // import StartCampaignView from '../screens/Start_Campaign';
-// import OrdersScreen from '../screens/Orders_screen';
+import OrdersScreen from '../screens/Orders_screen';
 // import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
 import ShopCheckoutScreen from '../screens/Checkout_screen';
@@ -16,6 +16,7 @@ import ForgotPassword from '../screens/ForgotPassword';
 import ResetPassword from '../screens/ResetPassword';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
+import OrderDetailsScreen from '../screens/Order_details'
 
 
 // import NotificationScreen from '../screens/Notification_screen';
@@ -98,16 +99,16 @@ export const AccountStackNavigator = () =>{
         options={() => ({ title: t('address') })}
       />
       
-      {/* <Stack.Screen
+      <Stack.Screen
         name = "OrdersScreen"
         component = {OrdersScreen}
         options={() => ({ title: t('orders') })}
-      /> */}
-      {/* <Stack.Screen
-        name = "CampaignsScreen"
-        component = {AccountCampaigns}
-        options={() => ({ title: t('campaigns'), headerShown: true })}
-      /> */}
+      />
+      <Stack.Screen
+        name = "OrderDetailsScreen"
+        component = {OrderDetailsScreen}
+        options={() => ({ title: t('order_details'), headerShown: true })}
+      />
       {/* <Stack.Screen
         name = "NotificationsScreen"
         component = {NotificationScreen}

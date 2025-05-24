@@ -27,6 +27,15 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.cartItems = {};
     },
+    setCartItems: (state, action) => {
+      const itemsArray = action.payload;
+      const cartItems = {};
+      itemsArray.forEach(item => {
+        const variantId = item.id; // You can change this to item.product_id if needed
+        cartItems[variantId] = item;
+      });
+      state.cartItems = cartItems;
+    },
   },
 });
 
@@ -34,5 +43,5 @@ export const selectCartCount = (state) => {
   return Object.values(state.cart.cartItems).filter(Boolean).length;
 };
 
-export const { addToCart, updateCartItemQuantity, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, updateCartItemQuantity, removeFromCart, clearCart, setCartItems } = cartSlice.actions;
 export default cartSlice.reducer;

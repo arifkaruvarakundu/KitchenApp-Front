@@ -12,7 +12,7 @@ import {useSelector} from 'react-redux';
 import Shop from '../screens/Shop';
 import { Ionicons } from '@expo/vector-icons';
 import ShoppingCart from '../screens/Cart';
-import { selectCartCount } from '../redux/cartSlice';
+import { selectCartCount, setCartItems } from '../redux/cartSlice';
 import CartTabIcon from '../components/Cart_tab_Icon';
 import { StackActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -21,8 +21,8 @@ import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setCartItems } from '../redux/cartSlice'; // adjust path if needed
-import { API_BASE_URL } from '../config'; // or wherever you define your base URL
+import API_BASE_URL from '../config';
+
 
 const Tab = createBottomTabNavigator();
 
