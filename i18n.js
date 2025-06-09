@@ -15,14 +15,10 @@ import SignInUpEN from './locales/en/SignIn_SignUp.json';
 import SignInUpAR from './locales/ar/SignIn_SignUp.json';
 import ProductDetailsEN from './locales/en/ProductDetails.json';
 import ProductDetailsAR from './locales/ar/ProductDetails.json';
-// import StackEN from './locales/en/Stack.json';
-// import StackAR from './locales/ar/Stack.json';
+import StackEN from './locales/en/Stack.json';
+import StackAR from './locales/ar/Stack.json';
 import AccountEN from './locales/en/Account.json';
 import AccountAR from './locales/ar/Account.json';
-// import CampaignDetailEN from './locales/en/CampaignDetails.json';
-// import CampaignDetailAR from './locales/ar/CampaignDetails.json';
-// import StartCampaignEN from './locales/en/StartCampaign.json';
-// import StartCampaignAR from './locales/ar/StartCampaign.json';
 // ... import other namespaces similarly
 
 // Define your resources
@@ -33,10 +29,8 @@ const resources = {
     cart: cartEN,
     SignIn_SignUp: SignInUpEN,
     ProductDetails: ProductDetailsEN,
-    // Stack: StackEN,
+    Stack: StackEN,
     Account: AccountEN,
-    // CampaignDetail: CampaignDetailEN,
-    // StartCampaign: StartCampaignEN,
     // ... add other namespaces
   },
   ar: {
@@ -45,10 +39,8 @@ const resources = {
     cart: cartAR,
     SignIn_SignUp: SignInUpAR,
     ProductDetails: ProductDetailsAR,
-    // Stack: StackAR,
+    Stack: StackAR,
     Account: AccountAR,
-    // CampaignDetail: CampaignDetailAR,
-    // StartCampaign: StartCampaignAR,
     // ... add other namespaces
   },
 };
@@ -71,10 +63,8 @@ i18n
       'cart',
       'SignIn_SignUp',
       'ProductDetails',
-      // 'Stack',
+      'Stack',
       'Account',
-      // 'CampaignDetail',
-      // 'StartCampaign',
       // ... list all your namespaces
     ],
     defaultNS: 'home',

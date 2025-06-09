@@ -17,7 +17,8 @@ import { useTranslation } from 'react-i18next';
 import {useSelector, useDispatch} from 'react-redux';
 import { addToCart, removeFromCart, updateCartItemQuantity } from '../redux/cartSlice';
 import Toast from 'react-native-toast-message';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showMessage } from "react-native-flash-message";
 const { width } = Dimensions.get("window");
 
 const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onCategorySelect }) => {
@@ -79,45 +80,85 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
     }
   };
   
-  const handleIncrease = (item) => {
-    const variantId = item.default_variant?.id || item.id; // fallback
-    const currentQty = localQuantities[item.id] || 0;
-    const isInCart = !!cartItems?.[variantId];
-    // const isInCart = !!cartItems?.[item.id?.toString()];
-    // const isInCart = !!cartItems?.[selectedVariant.id?.toString()];
-  
-    const newQty = currentQty + 1;
-  
-    setLocalQuantities((prev) => ({
-      ...prev,
-      [item.id]: newQty,
-    }));
-  
-    const itemToAdd = {
-      // id: item.id,
-      id: variantId,
-      productId: item.id,
-      name: item.product_name,
-      price: item.price,
-      image: item?.default_image?.image
-        ? `https://res.cloudinary.com/dvdhtcsfz/${item.default_image.image}`
-        : '',
-      quantity: newQty,
+  const handleIncrease = async (item) => {
+  const variantId = item.default_variant;
+  const productId = item.id;
+  const currentQty = localQuantities[item.id] || 0;
+  const isInCart = !!cartItems?.[variantId];
+  const newQty = currentQty + 1;
+
+  setLocalQuantities((prev) => ({
+    ...prev,
+    [item.id]: newQty,
+  }));
+
+  const itemToAdd = {
+    id: variantId,
+    productId: item.id,
+    name: item.product_name,
+    name_ar: item.product_name_ar,
+    price: item.price,
+    image: item?.default_image?.image
+      ? `https://res.cloudinary.com/dvdhtcsfz/${item.default_image.image}`
+      : '',
+    quantity: newQty,
   };
-  
+
+  try {
+    const token = await AsyncStorage.getItem('access_token');
+    let cartUuid = await AsyncStorage.getItem('cart_uuid');
+
+    const headers = {
+      'content-type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const payload = {
+      product_id: productId,
+      variant_id: variantId,
+      quantity: newQty,
+    };
+
+    if (!token && cartUuid) {
+      payload.cart_uuid = cartUuid;
+    }
+
     if (!isInCart) {
+      const response = await axios.post(
+        `${API_BASE_URL}/add_to_cart/`,
+        payload,
+        { headers }
+      );
+
+      const newCartUuid = response.data?.cart_uuid;
+      if (newCartUuid && !cartUuid) {
+        await AsyncStorage.setItem('cart_uuid', newCartUuid);
+      }
       dispatch(addToCart(itemToAdd));
-      Toast.show({
-        type: 'success',
-        text1: t("successaddcart"),
+
+      showMessage({
+        message: "Success",
+        description: "Product added to cart!",
+        type: "Success",
+        backgroundColor: "#00b2b3",
+        color: "#fff",
+        position: 'centre',
       });
     } else {
       dispatch(updateCartItemQuantity({ id: variantId, quantity: newQty }));
     }
-  };
-
-
-  
+  } catch (error) {
+    console.error('Failed to add to cart:', error?.response?.data || error.message);
+    Toast.show({
+      type: 'error',
+      text1: t('erroraddcart'),
+    });
+  }
+};
+      
   const handleDecrease = (item) => {
     const currentQty = localQuantities[item.id];
   
@@ -211,12 +252,12 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
           style={styles.addToCartButton}
           onPress={() => handleIncrease(item)}
         >
-          <AntDesign name="pluscircle" size={24} color="#1a7cc1" />
+          <AntDesign name="pluscircle" size={24} color="#9cca12" />
         </TouchableOpacity>
       ) : (
         <View style={styles.quantityControl}>
           <TouchableOpacity onPress={() => handleDecrease(item)}>
-            <AntDesign name="minuscircleo" size={24} color="#1a7cc1" />
+            <AntDesign name="minuscircleo" size={24} color="#9cca12" />
           </TouchableOpacity>
           <Text style={{
             marginHorizontal: 10,
@@ -229,7 +270,7 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onC
             {localQuantities[item.id]}
           </Text>
           <TouchableOpacity onPress={() => handleIncrease(item)}>
-            <AntDesign name="pluscircleo" size={24} color="#1a7cc1" />
+            <AntDesign name="pluscircleo" size={24} color="#9cca12" />
           </TouchableOpacity>
         </View>
       )}
@@ -336,7 +377,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 14,
-    color: "#1a7cc1",
+    color: "#000",
     marginRight: 5,
   },
   gridContent: {
@@ -460,7 +501,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 80,
     right: 5,
-    backgroundColor: "#a8d5ba",
+    backgroundColor: "#000",
     borderRadius: 12,
     padding: 2,
     zIndex: 5,

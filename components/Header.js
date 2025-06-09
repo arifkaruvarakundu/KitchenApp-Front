@@ -140,18 +140,18 @@ const Header = () => {
       <View style={styles.header}>
         {/* Search Toggle */}
         <TouchableOpacity style={styles.iconContainer} onPress={() => setSearchOpen(!searchOpen)}>
-          <Feather name="search" size={24} color="black" />
+          <Feather name="search" size={24} color="white" />
         </TouchableOpacity>
         <LanguageSelector/>
         {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{t('BastaKU')}</Text>
+          <Text style={styles.title}>{t('Ecoco')}</Text>
         </View>
 
         {/* Notification Icon */}
         {isAuthenticated && (
         <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate("AccountTab", {screen: "NotificationsScreen"})}>
-          <Feather name="bell" size={24} color="black" />
+          <Feather name="bell" size={24} color="white" />
           {notificationsCount > 0 && (
             <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>{notificationsCount}</Text>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 60,
-    backgroundColor: "#58b3e4",
+    backgroundColor: "#000",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "black",
+    color: "white",
   },
   searchContainer: {
     backgroundColor: "#fff",
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
-    borderColor: "#ccc",
+    borderColor: "#9cca12",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   badgeText: {
-    color: "white",
+    color: "black",
     fontSize: 12,
     fontWeight: "bold",
   },

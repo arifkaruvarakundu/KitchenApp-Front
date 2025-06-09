@@ -149,7 +149,7 @@ const ShopCheckoutScreen = () => {
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    const data = res.data;
     if (res.status === 201) {
       alert(`Order placed! ID: ${data.order_id}`);
       dispatch(clearCart())
@@ -277,9 +277,9 @@ const ShopCheckoutScreen = () => {
         <Text style={styles.totalText}>{calculateSubtotal()} KD</Text>
       </View>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#007bff' }]} onPress={() => generateInvoice(cartItems, address, calculateSubtotal)}>
+      {/* <TouchableOpacity style={[styles.button, { backgroundColor: '#007bff' }]} onPress={() => generateInvoice(cartItems, address, calculateSubtotal)}>
         <Text style={styles.buttonText}>Download Invoice</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Place Order */}
       <TouchableOpacity style={styles.button} onPress={handlePlaceOrder}>
@@ -451,14 +451,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#1a7cc1',
+    backgroundColor: '#9cca12',
     padding: 15,
     borderRadius: 6,
     alignItems: 'center',
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontWeight: '600',
   },
   modalOverlay: {

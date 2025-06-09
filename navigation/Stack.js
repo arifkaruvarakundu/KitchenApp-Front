@@ -67,7 +67,15 @@ export const ShopStackNavigator = () => {
       <Stack.Screen 
         name="ProductDetails" 
         component={ProductDetailView} 
-        options={() => ({ title: t('productDetails'), headerShown: true })}
+        options={() => ({ 
+          title: t('productDetails'), 
+          headerShown: true ,
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerTintColor: '#fff',
+          
+        })}
       />
       {/* <Stack.Screen 
         name="CampaignDetails" 
@@ -96,18 +104,39 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "Address"
         component = {AddressScreen}
-        options={() => ({ title: t('address') })}
+        options={() => ({ 
+          title: t('address'),
+          headerShown: true ,
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerTintColor: '#fff',
+        })}
       />
       
       <Stack.Screen
         name = "OrdersScreen"
         component = {OrdersScreen}
-        options={() => ({ title: t('orders') })}
+        options={() => ({ 
+          title: t('orders'),
+          headerShown: true ,
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerTintColor: '#fff',
+        })}
       />
       <Stack.Screen
         name = "OrderDetailsScreen"
         component = {OrderDetailsScreen}
-        options={() => ({ title: t('order_details'), headerShown: true })}
+        options={() => ({ 
+          title: t('order_details'), 
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerTintColor: '#fff',
+        })}
       />
       {/* <Stack.Screen
         name = "NotificationsScreen"
@@ -120,7 +149,7 @@ export const AccountStackNavigator = () =>{
 
 // cart Stack
 export const CartStackNavigator = () => {
-  
+  const { t } = useTranslation('Stack');
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -131,6 +160,15 @@ export const CartStackNavigator = () => {
         <Stack.Screen 
         name="Checkout" 
         component={ShopCheckoutScreen} 
+         options={() => ({ 
+          title: t('checkout'), 
+          headerShown: true ,
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerTintColor: '#fff',
+          
+        })}
       />
     </Stack.Navigator>
   );

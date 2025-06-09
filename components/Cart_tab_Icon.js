@@ -10,7 +10,7 @@ const CartTabIcon = ({ color, size, focused }) => {
   return (
     <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
       <View style={{
-        backgroundColor: focused ? '#eaf5ec' : 'transparent',
+        backgroundColor: focused ? '#9cca12' : 'transparent',
               borderRadius: 6,
               width: size + 12,         // Square just slightly larger than icon
               height: size + 12,
@@ -30,7 +30,7 @@ const CartTabIcon = ({ color, size, focused }) => {
           position: 'absolute',
           top: -2,
           right: -10,
-          backgroundColor: '#ff3b30',
+          backgroundColor: '#9cca12',
           borderRadius: 10,
           paddingHorizontal: 5,
           minWidth: 18,
@@ -38,7 +38,7 @@ const CartTabIcon = ({ color, size, focused }) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>{cartCount}</Text>
+          <Text style={{ color: 'black', fontSize: 10, fontWeight: 'bold' }}>{cartCount}</Text>
         </View>
       )}
     </View>

@@ -119,7 +119,7 @@ const handleColorSelect = (selected) => {
   }
 };
 
-  const handleAddToCart = async () => {
+const handleAddToCart = async () => {
   console.log("cartItems:@@@", cartItems);
 
   if (!selectedVariant || !selectedVariant.id || !fetchedProduct?.product_name) {
@@ -148,6 +148,7 @@ const handleColorSelect = (selected) => {
     id: selectedVariant.id,
     productId: fetchedProduct.id,
     name: fetchedProduct.product_name,
+    name_ar: fetchedProduct.product_name_ar,
     brand: selectedVariant.brand,
     price: selectedVariant.price,
     image: image,
@@ -155,37 +156,35 @@ const handleColorSelect = (selected) => {
     color: selectedVariant.color,
   };
 
-  // 🚨 Use isAuthenticated to branch logic
-  if (!isAuthenticated && cartUuid) {
-    console.log("Guest user - saving cart locally only");
-    dispatch(addToCart(itemToAdd));
-
-    Toast.show({
-      type: 'success',
-      text1: t("success_item_added"),
-    });
-
-    return;
-  }
-
-  // ✅ Authenticated user - call API
   try {
-    console.log("Authenticated user - sending to backend");
-    const token = await AsyncStorage.getItem('access_token')
-    const response = await axios.post(`${API_BASE_URL}/add_to_cart/`, {
+    const token = await AsyncStorage.getItem('access_token');
+    let cartUuid = await AsyncStorage.getItem('cart_uuid');
+
+    const headers = {
+      'content-type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const payload = {
       product_id: fetchedProduct.id,
       variant_id: selectedVariant.id,
       quantity,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // If needed
-      }
+    };
+
+    if (!token && cartUuid) {
+      payload.cart_uuid = cartUuid;
+    }
+
+    const response = await axios.post(`${API_BASE_URL}/add_to_cart/`, payload, {
+      headers,
     });
 
     const data = response.data;
 
-    if (data.cart_uuid) {
+    if (data.cart_uuid && !cartUuid) {
       await AsyncStorage.setItem('cart_uuid', data.cart_uuid);
       updateCartUuid(data.cart_uuid);
     }
@@ -465,7 +464,7 @@ const styles = StyleSheet.create({
   qtyButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#cee9f8',
+    backgroundColor: '#9cca12',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -483,7 +482,7 @@ const styles = StyleSheet.create({
   },
   cartButton: {
     flex: 1,
-    backgroundColor: '#1a7cc1',
+    backgroundColor: '#9cca12',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -495,7 +494,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cartButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.4,

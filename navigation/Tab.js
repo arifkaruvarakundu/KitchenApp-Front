@@ -80,7 +80,7 @@ useEffect(() => {
           //   elevation: 5,
           // },
           tabBarStyle: {
-            backgroundColor: '#58b3e4',
+            backgroundColor: '#000',
             height: 60 + bottom, // slightly increased height
             paddingBottom: Platform.OS === 'android' ? bottom : bottom + 5,
             paddingTop: 5,
@@ -107,7 +107,7 @@ useEffect(() => {
           title: t('home'),
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{
-              backgroundColor: focused ? '#eaf5ec' : 'transparent',
+              backgroundColor: focused ? '#9cca12' : 'transparent',
               borderRadius: 6,
               width: size + 12,         // Square just slightly larger than icon
               height: size + 12,
@@ -133,7 +133,7 @@ useEffect(() => {
     title: t('shop'),
     tabBarIcon: ({ color, size, focused }) => (
       <View style={{
-        backgroundColor: focused ? '#eaf5ec' : 'transparent',
+        backgroundColor: focused ? '#9cca12' : 'transparent',
               borderRadius: 6,
               width: size + 12,         // Square just slightly larger than icon
               height: size + 12,
@@ -187,7 +187,7 @@ useEffect(() => {
       title: t('account'),
       tabBarIcon: ({ color, size, focused }) => (
         <View style={{
-          backgroundColor: focused ? '#eaf5ec' : 'transparent',
+          backgroundColor: focused ? '#9cca12' : 'transparent',
               borderRadius: 6,
               width: size + 12,         // Square just slightly larger than icon
               height: size + 12,
@@ -212,7 +212,7 @@ useEffect(() => {
       title: t('SignIn/SignUp'), // You can change this label to "Account" or "Login"
       tabBarIcon: ({ color, size, focused }) => (
         <View style={{
-          backgroundColor: focused ? '#eaf5ec' : 'transparent',
+          backgroundColor: focused ? '#9cca12' : 'transparent',
               borderRadius: 6,
               width: size + 12,         // Square just slightly larger than icon
               height: size + 12,

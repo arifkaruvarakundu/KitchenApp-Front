@@ -1,0 +1,14 @@
+{
+    "home": "Home",
+    "shop": "Shop",
+    "productDetails": "Product Details",
+    "account": "Account",
+    "address": "Address",
+    "orders": "My Orders",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "notifications": "Notifications",
+    "order_details": "Order Details",
+    "checkout": "Checkout",
+    "changePassword": "Change Password"
+}

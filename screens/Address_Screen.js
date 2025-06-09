@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   button: {
-    backgroundColor: '#1a7cc1',
+    backgroundColor: '#9cca12',
     paddingVertical: 16,
     borderRadius: 10,
     marginTop: 30,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: '600',
     textTransform: 'uppercase',

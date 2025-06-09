@@ -32,7 +32,11 @@ const cartSlice = createSlice({
       const cartItems = {};
       itemsArray.forEach(item => {
         const variantId = item.id; // You can change this to item.product_id if needed
-        cartItems[variantId] = item;
+        cartItems[variantId] ={
+          ...item,
+          color: item.variant?.color || ''
+
+        } 
       });
       state.cartItems = cartItems;
     },

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
+import {setCartItems} from '../redux/cartSlice';
 
 export default function Login({ navigation }) {
   const [formData, setFormData] = useState({
@@ -28,6 +29,59 @@ export default function Login({ navigation }) {
   const {i18n} = useTranslation();
    
   const { t } = useTranslation("SignIn_SignUp");
+
+  const fetchUserCart = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/cart_details/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const items = response.data.items; // 🔥 FIX: extract `items` properly
+    console.log("cart items from server:", items);
+
+    if (Array.isArray(items)) {
+      dispatch(setCartItems(items)); // ✅ Dispatch the array
+    }
+  } catch (error) {
+    console.error("Failed to fetch user cart:", error?.response?.data || error.message);
+  }
+};
+
+const mergeGuestCart = async (token) => {
+  const cartUuid = await AsyncStorage.getItem('cart_uuid');
+  if (!cartUuid) return;
+
+  try {
+    // Step 1: Check if the signed-in user already has a cart
+    const checkRes = await axios.get(`${API_BASE_URL}/has_user_cart/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (checkRes.data?.has_cart) {
+      // ❌ User already has a cart — no need to merge guest cart
+      await AsyncStorage.removeItem('cart_uuid');  // Clean up old guest uuid
+      return;
+    }
+
+    // ✅ User has no cart — try to merge guest cart
+    await axios.post(`${API_BASE_URL}/merge_guest_cart/`, {
+      cart_uuid: cartUuid,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    await AsyncStorage.removeItem('cart_uuid');
+  } catch (error) {
+    console.error('Cart merge failed:', error?.response?.data || error.message);
+  }
+};
 
   const handleLogin = async () => {
     const { email, password } = formData;
@@ -57,13 +111,16 @@ export default function Login({ navigation }) {
       const response = await axios.post(`${API_BASE_URL}/login/`, formData);
 
       const data = await response.data;
+      const token = await response.data.token.access
       console.log("data:#########",data)
 
       if (response.status === 200) {
         dispatch(setAuthenticated())
 
-        await AsyncStorage.setItem('access_token', data.token.access)
+        await AsyncStorage.setItem('access_token', token)
+        await mergeGuestCart(token)
         await AsyncStorage.setItem('email', data.email)
+        await fetchUserCart(token)
         // If login is successful, handle successful login logic
         Toast.show({
           type: 'success',
@@ -180,7 +237,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#1a7cc1', // Matching color from SignUp
+    backgroundColor: '#9cca12', // Matching color from SignUp
     padding: 15,
     borderRadius: 10,
     marginTop: 20,

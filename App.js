@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import './i18n';
 import React,{useEffect} from 'react';
 import {StyleSheet} from "react-native"
@@ -11,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { CartProvider } from './context/CartContext'; // make sure path matches
+import FlashMessage from 'react-native-flash-message';
 
 export default function App() {
 
@@ -43,6 +46,7 @@ export default function App() {
           <NavigationContainer>
             <TabNavigator />
               <Toast />
+              <FlashMessage/>
           </NavigationContainer>
           </CartProvider>
         </SafeAreaProvider>

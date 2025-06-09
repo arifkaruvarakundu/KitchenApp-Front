@@ -19,8 +19,7 @@ const { width } = Dimensions.get("window");
 const carouselData = [
   {
     id: "1",
-    image:
-      "https://img.freepik.com/free-photo/people-stacking-hands-together-park_53876-63293.jpg?t=st=1741676723~exp=1741680323~hmac=138766b1a77dedfb2f938e7629f250fcea6f59b05135704eec91683fdf008d6d&w=740",
+    image: "../assets/carousel_images/carousel1.jpg",
     title: "Spring Collection Sale",
     subtitle: "Up to 50% off on select items",
     buttonText: "Shop Now",
@@ -273,14 +272,14 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   button: {
-    backgroundColor: "#1a7cc1",
+    backgroundColor: "#9cca12",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 5,
     alignSelf: "flex-start",
   },
   buttonText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     fontSize: 14,
   },

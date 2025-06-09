@@ -6,6 +6,10 @@ import { updateCartItemQuantity, removeFromCart } from '../redux/cartSlice';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import API_BASE_URL from '../config';
+import Toast from 'react-native-toast-message';
 
 const ShoppingCart = () => {
 
@@ -33,9 +37,60 @@ const ShoppingCart = () => {
     }
   };
 
-  const removeItem = (item) => {
-    dispatch(removeFromCart(item.id));
+  const handleRemoveFromCart = async (item) => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      const cartUuid = await AsyncStorage.getItem('cart_uuid');
+
+      // Base request body
+      const data = {
+        variant_id: item.id
+      };
+
+      // If token doesn't exist, assume guest and include cart_uuid
+      if (!token) {
+        if (!cartUuid) {
+          throw new Error("Missing cart UUID for guest user.");
+        }
+        data.cart_uuid = cartUuid;
+      }
+
+      await axios.delete(`${API_BASE_URL}/remove_from_cart/`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+          'Content-Type': 'application/json',
+        },
+        data: data,
+      });
+
+      dispatch(removeFromCart(item.id));
+      Toast.show({
+        type: 'success',
+        text1: 'Item removed from cart',
+      });
+
+    } catch (error) {
+      const errMsg = error?.response?.data?.error || error.message;
+
+      // ✅ Backend says item doesn't exist? Clean up anyway.
+      if (errMsg === "Item not found in cart") {
+        dispatch(removeFromCart(item.id));
+        Toast.show({
+          type: 'success',
+          text1: 'Item removed from cart (already gone on server)',
+        });
+        return;
+      }
+
+      // 🔴 Other errors
+      console.error("Remove failed:", error?.response?.data || error.message);
+      Alert.alert("Error", "Failed to remove item from cart.");
+    }
   };
+
+  // const removeItem = (item) => {
+  //   dispatch(removeFromCart(item.id));
+  // };
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
@@ -61,7 +116,7 @@ const ShoppingCart = () => {
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{i18n.language === "ar" ? item.name_ar : item.name}</Text>
           {/* <Text style={styles.brand}>{item.brand}</Text> */}
-          <Text style={styles.brand}>{item.color}</Text>
+          <Text style={styles.brand}>{item.color || item.variant?.color}</Text>
           <Text style={styles.price}>${parseFloat(item.price).toFixed(2)}</Text>
         </View>
         <View style={styles.actionsContainer}>
@@ -74,7 +129,7 @@ const ShoppingCart = () => {
               <Text style={styles.qtyButtonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => removeItem(item)}>
+          <TouchableOpacity onPress={() => handleRemoveFromCart(item)}>
             <Text style={styles.removeText}>{t("remove")}</Text>
           </TouchableOpacity>
         </View>
@@ -176,7 +231,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   qtyButton: {
-    backgroundColor: '#ddd',
+    backgroundColor: '#9cca12',
     borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -223,13 +278,13 @@ const styles = StyleSheet.create({
     color: '#1a7cc1',
   },
   checkoutButton: {
-    backgroundColor: '#1a7cc1',
+    backgroundColor: '#9cca12',
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 8,
   },
   checkoutButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: '600',
   },
