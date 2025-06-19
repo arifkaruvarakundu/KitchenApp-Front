@@ -1,5 +1,5 @@
-import React,{useState, useEffect, useRef} from 'react';
-import { View, StyleSheet, ScrollView} from 'react-native';
+import React,{useState, useEffect, useRef, useCallback} from 'react';
+import { View, StyleSheet, FlatList, RefreshControl} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CategoriesShop from '../components/Categories_shop';
 import ProductItem from '../components/ProductItem';
@@ -12,7 +12,7 @@ const Shop = ({navigation}) => {
 
     // const navigation = useNavigation();
     const route = useRoute()
-
+    const [refreshing, setRefreshing] = useState(false);
     const { categoryId, categoryName, categoryNameAR } = route.params || {};
     const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId || null);
     const [selectedCategoryName, setSelectedCategoryName] = useState(categoryName || null)
@@ -22,6 +22,8 @@ const Shop = ({navigation}) => {
     const { i18n } = useTranslation();
 
     const categoriesFlatListRef = useRef(null); 
+
+    
 
     useEffect(() => {
       if (categoryId || categoryName || categoryNameAR) {
@@ -60,9 +62,24 @@ const Shop = ({navigation}) => {
       }
     };  
 
+    // 🔄 Refresh logic
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    // You may want to re-fetch categories or clear state here if needed
+    setTimeout(() => {
+      // If ProductItem supports reloading via a prop or ref, trigger it
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <Header/>
+      <FlatList
+        data = {[]}
+        ListHeaderComponent={
+        <>
         <CategoriesShop
             navigation={navigation}
             onCategorySelect={handleCategorySelect}
@@ -80,7 +97,14 @@ const Shop = ({navigation}) => {
             onCategorySelect = {handleCategorySelect}
           />
       </View>
-      {/* </ScrollView> */}
+      </>
+        }
+        keyExtractor={() => 'dummy'} // FlatList requires keyExtractor
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+
     </SafeAreaView>
   );
 };

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React,{useState} from 'react';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateCartItemQuantity, removeFromCart } from '../redux/cartSlice';
@@ -10,14 +10,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import API_BASE_URL from '../config';
 import Toast from 'react-native-toast-message';
+import { fetchUserCart } from '../utils/useCart';
 
 const ShoppingCart = () => {
 
+  const [refreshing, setRefreshing] = React.useState(false);
   const dispatch = useDispatch();
   const selectCartItems = createSelector(
     state => state.cart.cartItems,
     (cartItems) => Object.values(cartItems).filter(item => item && item.id)
   );
+
+  const onRefresh = async () => {
+  setRefreshing(true);
+  const success = await fetchUserCart(dispatch);
+  if (!success) {
+    Alert.alert("Error", "Failed to refresh cart.");
+  }
+  setRefreshing(false);
+};
   
   const navigation = useNavigation();
   // then in your component
@@ -150,6 +161,9 @@ const ShoppingCart = () => {
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
               contentContainerStyle={{ paddingBottom: 150 }}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             />
             <View style={styles.totalContainer}>
               <View style={styles.totalTextContainer}>

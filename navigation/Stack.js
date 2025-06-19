@@ -6,20 +6,15 @@ import Shop from '../screens/Shop';
 import ProductDetailView from '../screens/Product_details';
 import AddressScreen from '../screens/Address_Screen';
 import Account from '../screens/Account';
-// import CampaignDetailView from '../screens/Campaign_detail';
-// import StartCampaignView from '../screens/Start_Campaign';
 import OrdersScreen from '../screens/Orders_screen';
-// import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
 import ShopCheckoutScreen from '../screens/Checkout_screen';
 import ForgotPassword from '../screens/ForgotPassword';
 import ResetPassword from '../screens/ResetPassword';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
-import OrderDetailsScreen from '../screens/Order_details'
-
-
-// import NotificationScreen from '../screens/Notification_screen';
+import OrderDetailsScreen from '../screens/Order_details';
+import NotificationScreen from '../screens/Notifications';
 import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();
@@ -77,16 +72,6 @@ export const ShopStackNavigator = () => {
           
         })}
       />
-      {/* <Stack.Screen 
-        name="CampaignDetails" 
-        component={CampaignDetailView}
-        options={() => ({ title: t('campaignDetails') })}
-      /> */}
-      {/* <Stack.Screen 
-        name="StartCampaign" 
-        component={StartCampaignView} 
-        options={() => ({ title: t('startCampaign') })}
-      /> */}
     </Stack.Navigator>
   );
 };
@@ -138,11 +123,11 @@ export const AccountStackNavigator = () =>{
           headerTintColor: '#fff',
         })}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name = "NotificationsScreen"
         component = {NotificationScreen}
         options={() => ({ title: t('notifications'), headerShown: true })}
-      /> */}
+      />
     </ Stack.Navigator>
   );
 };

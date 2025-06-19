@@ -40,17 +40,7 @@ const OrdersScreen = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("All orders:", response.data.orders);
-
-        // response.data.orders.forEach((order, index) => {
-        // console.log(`\nOrder #${index + 1} (ID: ${order.id}):`);
-        // console.log("Status:", order.status);
-        // console.log("Total Amount:", order.total_amount);
-        // console.log("Items:");
-        // console.log(order.items); // This will now show the full array
-        // });
       const { orders, campaign_orders } = response.data;
-
       setOrders(orders || []);
       setCampaignOrders(campaign_orders || []);
       setError(null);
@@ -88,7 +78,7 @@ const OrdersScreen = () => {
       <View style={styles.orderHeader}>
         <Text style={styles.orderId}>{t("order")} #{item.id}</Text>
         <Text style={[styles.orderStatus, { color: getStatusColor(item.status) }]}>
-          {t(order.status)}
+          {t(item.status)}
         </Text>
       </View>
   
@@ -99,26 +89,13 @@ const OrdersScreen = () => {
           <Text style={styles.orderItemCount}>
             {item.items_count} {t("items")}
         </Text>
-
         <Text style={styles.orderTotal}>{t("total")}: {item.total_amount} KD</Text>
       </View>
   
-      {/* <View style={styles.itemRow}>
-        <Image
-          source={{ uri: item.variant?.variant_images?.[0]?.image_url }}
-          style={styles.itemImage}
-        />
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemName}>{item.variant?.brand || 'No brand'}</Text>
-          <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
-        </View>
-        <Text style={styles.itemPrice}>${item.variant?.price || '0.00'}</Text>
-      </View> */}
-  
       <View style={styles.orderFooter}>
-        <TouchableOpacity style={styles.trackButton}>
+        {/* <TouchableOpacity style={styles.trackButton}>
             <Text style={styles.trackButtonText}>{t("track_order")}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity 
             style={styles.trackButton}
             onPress={() => navigation.navigate('OrderDetailsScreen', { order: item })}
@@ -128,42 +105,6 @@ const OrdersScreen = () => {
         </View>
     </TouchableOpacity>
   );
-  
-//   const renderCampaignOrderItem = ({ item }) => (
-//     <TouchableOpacity style={styles.orderCard}>
-//       <View style={styles.orderHeader}>
-//         <Text style={styles.orderId}>{t("campaign_orders")} #{item.id}</Text>
-//         <Text style={[styles.orderStatus, { color: getStatusColor(item.payment_status) }]}>
-//           {item.payment_status}
-//         </Text>
-//       </View>
-
-//       <View style={styles.orderDetails}>
-//         <Text style={styles.orderDate}>
-//           {new Date(item.created_at).toLocaleDateString()}
-//         </Text>
-//         <Text style={styles.orderTotal}>{t("total")}: ${item.total_price}</Text>
-//       </View>
-
-//       <View style={styles.itemRow}>
-//         <Image
-//           source={{ uri: item.variant?.variant_images?.[0]?.image_url }}
-//           style={styles.itemImage}
-//         />
-//         <View style={styles.itemInfo}>
-//           <Text style={styles.itemName}>{item.campaign}</Text>
-//           <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
-//         </View>
-//         <Text style={styles.itemPrice}>${item.total_price}</Text>
-//       </View>
-
-//       <View style={styles.orderFooter}>
-//         <TouchableOpacity style={styles.trackButton}>
-//           <Text style={styles.trackButtonText}>{t("pay")}</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </TouchableOpacity>
-//   );
 
   if (loading && !refreshing) {
     return (
@@ -188,18 +129,6 @@ const OrdersScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>{t("campaign_orders")}</Text>
-      {campaignOrders.length === 0 ? (
-        <Text style={styles.emptyText}>{t("no_campaign_orders")}</Text>
-      ) : (
-        <FlatList
-          data={campaignOrders}
-          renderItem={renderCampaignOrderItem}
-          keyExtractor={(item) => `campaign-${item.id}`}
-          contentContainerStyle={styles.listContainer}
-        />
-      )} */}
-
       <Text style={styles.title}>{t("regular_orders")}</Text>
       {orders.length === 0 ? (
         <Text style={styles.emptyText}>{t("no_regular_orders")}</Text>

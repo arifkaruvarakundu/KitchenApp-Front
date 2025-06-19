@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, ScrollView, RefreshControl} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setNotAuthenticated } from '../redux/authSlice';
@@ -15,7 +15,7 @@ import axios from 'axios';
 const Account = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [orderCount, setOrderCount] = useState(0);
-  // const [campaignCount, setCampaignCount] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
   const dispatch = useDispatch();
@@ -26,14 +26,18 @@ const Account = () => {
   const {i18n} = useTranslation(); // Use the 'Account' namespace for translations
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
+  onRefresh();
+}, []);
 
-  useEffect(() => {
-    fetchCounts();
-  }, []);
+  const onRefresh = async () => {
+  setRefreshing(true);
+  await Promise.all([
+    fetchUserProfile(),
+    fetchCounts()
+  ]);
+  setRefreshing(false);
+};
   
-
   const fetchUserProfile = async () => {
     const token = await AsyncStorage.getItem('access_token');
     
@@ -137,40 +141,24 @@ const Account = () => {
   };
 
   const fetchCounts = async () => {
+  try {
     const token = await AsyncStorage.getItem('access_token');
-    const email = await AsyncStorage.getItem('email');
-  
-    try {
-      const [ordersResponse, campaignsResponse, notificationsResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/user_orders/`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        }),
-        // axios.get(`${API_BASE_URL}/user_campaigns/`, {
-        //   headers: { 'Authorization': `Bearer ${token}` },
-        // }),
-        axios.get(`${API_BASE_URL}/notifications/`, {
-          headers: {
-            'Content-Type': 'application/json',
-            email: email,
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
-  
-      const ordersData = ordersResponse.data;
-      // const campaignsData =  campaignsResponse.data;
-      const notificationsData = notificationsResponse.data;
-      const unreadNotifications = notificationsData.filter((notification) => !notification.is_read);
-      const totalOrdersCount = (ordersData.orders.length || 0) + (ordersData.campaign_orders.length || 0);
-  
-      setOrderCount(totalOrdersCount || 0);
-      // setCampaignCount(campaignsData.length || 0);
-      setNotificationCount(unreadNotifications.length || 0);
-  
-    } catch (error) {
-      console.error('Error fetching counts:', error);
-    }
-  };
+
+    const response = await axios.get(`${API_BASE_URL}/user_stats/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = response.data;
+
+    setOrderCount(data.orders_count || 0);
+    setNotificationCount(data.unread_notifications_count || 0);
+
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+  }
+};
   
   const handleLogout = async () => {
     try {
@@ -200,8 +188,12 @@ const Account = () => {
   ];
 
   return (
-    <View style={styles.container}>
-
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
        {/* Profile Section */}
        <TouchableOpacity style={styles.profileContainer} onPress={handlePickImage}>
         {profileImage ? (
@@ -239,7 +231,8 @@ const Account = () => {
           <Text style={styles.logoutText}>{t("logout")}</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </ScrollView>
+
   );
 };
 

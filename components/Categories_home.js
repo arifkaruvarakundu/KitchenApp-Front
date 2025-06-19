@@ -16,37 +16,11 @@ import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get("window");
 
-const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const CategoriesHome = ({ navigation, categories = [], loading = false }) => {
+
   const { i18n } = useTranslation();
   const { t } = useTranslation('home');
 
-  useEffect(() => {
-    // If you have a real API, use this:
-    const loadCategories = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/categories/`);
-        console.log("Response Data@@@@@@@@",response.data)
-        setCategories(response.data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load Categories');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCategories();
-
-    // For demo purposes, we'll use dummy data with a timeout to simulate loading
-    setTimeout(() => {
-        // setCategories(response.data);
-      setLoading(false);
-    }, 1000);
-  }, []);
 
   const handleViewAll = () => {
     // Navigate to the featured sellers list screen
@@ -83,11 +57,6 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
       <Text style={styles.sellerName} numberOfLines={2}>
         {i18n.language === "ar" ? item.category_name_ar : item.category_name}
       </Text>
-      {/* <View style={styles.ratingContainer}>
-        <AntDesign name="star" size={12} color="#FFD700" />
-        <Text style={styles.ratingText}>{item.rating}</Text>
-      </View> */}
-      {/* <Text style={styles.productsText}>{item.productsCount}</Text> */}
     </TouchableOpacity>
   );
 
@@ -95,14 +64,6 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
@@ -115,10 +76,6 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>{t('categories')}</Text>
-        {/* <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>More</Text>
-          <AntDesign name="right" size={16} color="#b6e4af" />
-        </TouchableOpacity> */}
       </View>
       <FlatList
         data={categories}
@@ -128,7 +85,6 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.gridContent}
       />
-
     </View>
   );
 };

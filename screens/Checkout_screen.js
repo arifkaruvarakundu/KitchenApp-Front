@@ -12,12 +12,13 @@ import {
   Modal,
 } from 'react-native';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from '../config';
 import { createSelector } from 'reselect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateInvoice } from '../components/Generate_InvoicePdf';
+import { clearCart } from '../redux/cartSlice';
 
 const ShopCheckoutScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ const ShopCheckoutScreen = () => {
 
   const navigation = useNavigation();
   const cartItems = useSelector(selectCartItems);
+  const dispatch = useDispatch()
   console.log("cartItems:",cartItems)
   const [userDetails, setUserDetails] = useState(null);
   const [address, setAddress] = useState({
@@ -57,25 +59,23 @@ const ShopCheckoutScreen = () => {
         const response = await axios.get(`${API_BASE_URL}/user_details/`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            email,
           },
         });
-
-        console.log("user details:", response.data)
 
         setUserDetails(response.data);
         
         const user = response.data;
-        const billingAddress = user.addresses?.find(addr => addr.address_type === 'billing') || {};
-
+        const useraddress = Array.isArray(user.addresses) && user.addresses.length > 0
+          ? user.addresses[0]
+          : {};
         setAddress({
             first_name: user.first_name || '',
             last_name: user.last_name || '',
-            street_address: billingAddress.street_address || '',
-            city: billingAddress.city || '',
-            zipcode: billingAddress.zipcode || '',
-            country: billingAddress.country || 'KUWAIT',
-            phone_number: billingAddress.phone_number || '',
+            street_address: useraddress.street_address || '',
+            city: useraddress.city || '',
+            zipcode: useraddress.zipcode || '',
+            country: useraddress.country || 'KUWAIT',
+            phone_number: useraddress.phone_number || '',
             });
           } catch (err) {
             console.log('Error fetching profile:', err.response?.data || err.message);
@@ -134,34 +134,42 @@ const ShopCheckoutScreen = () => {
     const payload = {
       items: cartItems.map(item => ({
         variant_id: item?.variant?.id,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+      })),
     };
 
-    const token = await AsyncStorage.getItem('access_token'); // or however you store it
+    const token = await AsyncStorage.getItem('access_token');
 
-    const res = await axios.post(`${API_BASE_URL}/place_order/`, {
-      method: 'POST',
+    const res = await axios.post(`${API_BASE_URL}/place_order/`, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`  // or Bearer if JWT
+        'Authorization': `Bearer ${token}`, // or 'Token' if not using JWT
       },
-      body: JSON.stringify(payload)
     });
 
-    const data = res.data;
-    if (res.status === 201) {
-      alert(`Order placed! ID: ${data.order_id}`);
-      dispatch(clearCart())
-    } else {
-      alert(`Error: ${data.error || 'Something went wrong'}`);
-    }
+    console.log('Order Response:', res);
+
+    alert(`Order placed! ID: ${res.data.order_id}`);
+    dispatch(clearCart());
+    navigation.navigate('AccountTab', {
+        screen: 'OrdersScreen',
+      });
   } catch (err) {
-    console.error(err);
-    alert('Failed to place order');
+    if (err.response) {
+      // Server responded with an error
+      console.error('Server Error:', err.response.data);
+      alert(`Error: ${err.response.data.error || 'Something went wrong'}`);
+    } else if (err.request) {
+      // Request was made but no response
+      console.error('No response:', err.request);
+      alert('No response from server');
+    } else {
+      // Something else caused the error
+      console.error('Error:', err.message);
+      alert('Error placing order');
+    }
   }
 };
-
 
   if (loading) {
     return (

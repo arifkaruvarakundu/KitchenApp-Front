@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
 import {setCartItems} from '../redux/cartSlice';
+import { fetchUserCart } from '../utils/useCart';
 
 export default function Login({ navigation }) {
   const [formData, setFormData] = useState({
@@ -30,24 +31,7 @@ export default function Login({ navigation }) {
    
   const { t } = useTranslation("SignIn_SignUp");
 
-  const fetchUserCart = async (token) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/cart_details/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
 
-    const items = response.data.items; // 🔥 FIX: extract `items` properly
-    console.log("cart items from server:", items);
-
-    if (Array.isArray(items)) {
-      dispatch(setCartItems(items)); // ✅ Dispatch the array
-    }
-  } catch (error) {
-    console.error("Failed to fetch user cart:", error?.response?.data || error.message);
-  }
-};
 
 const mergeGuestCart = async (token) => {
   const cartUuid = await AsyncStorage.getItem('cart_uuid');
@@ -79,6 +63,9 @@ const mergeGuestCart = async (token) => {
 
     await AsyncStorage.removeItem('cart_uuid');
   } catch (error) {
+    console.log('Full merge cart error:', error);
+    console.log('Error response:', error?.response);
+    console.log('Error response data:', error?.response?.data);
     console.error('Cart merge failed:', error?.response?.data || error.message);
   }
 };
@@ -120,7 +107,7 @@ const mergeGuestCart = async (token) => {
         await AsyncStorage.setItem('access_token', token)
         await mergeGuestCart(token)
         await AsyncStorage.setItem('email', data.email)
-        await fetchUserCart(token)
+        await fetchUserCart(dispatch); // ✅ CORRECT
         // If login is successful, handle successful login logic
         Toast.show({
           type: 'success',
