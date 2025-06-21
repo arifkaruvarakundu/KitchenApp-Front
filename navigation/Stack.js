@@ -15,6 +15,7 @@ import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import OrderDetailsScreen from '../screens/Order_details';
 import NotificationScreen from '../screens/Notifications';
+import ChangePasswordScreen from '../screens/Change_password';
 import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();
@@ -111,6 +112,13 @@ export const AccountStackNavigator = () =>{
           headerTintColor: '#fff',
         })}
       />
+      
+      <Stack.Screen 
+        name="ChangePasswordScreen" 
+        component={ChangePasswordScreen} 
+        options={{ title: 'Change Password' }} 
+      />
+
       <Stack.Screen
         name = "OrderDetailsScreen"
         component = {OrderDetailsScreen}

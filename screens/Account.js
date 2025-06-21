@@ -183,7 +183,7 @@ const Account = () => {
   const options = [
     { icon: 'location-outline', label: 'Address', onPress: () => navigation.navigate('Address') },
     { icon: 'receipt-outline', label: 'Orders', onPress: () => navigation.navigate('OrdersScreen'), count: orderCount },
-    // { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen'), count: campaignCount },
+    { icon: 'settings-outline', label: 'Settings', onPress: () => navigation.navigate('AccountTab', { screen: 'ChangePasswordScreen' })},
     { icon: 'notifications-outline', label: 'Notifications', onPress: () => navigation.navigate('NotificationsScreen'), count: notificationCount },
   ];
 
